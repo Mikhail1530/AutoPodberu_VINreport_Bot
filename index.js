@@ -36,7 +36,6 @@ const resetVarPerMonth = () => {
 }
 
 
-
 const KEYBOARD = {
     reply_markup: JSON.stringify({
         keyboard: [
@@ -58,9 +57,9 @@ const KEYBOARD_ADMIN = {
 const checksOptions = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
-            [{text: 'Купить 1 проверку (4$)', callback_data: 'OneCheckVIN'}],
-            [{text: 'Купить 3 проверки (10$)', callback_data: 'ThreeCheckVIN'}],
-            [{text: 'Купить 5 проверок (15$)', callback_data: 'FiveCheckVIN'}]
+            [{text: 'Купить 1 проверку (5$)', callback_data: 'OneCheckVIN'}],
+            [{text: 'Купить 3 проверки (14$)', callback_data: 'ThreeCheckVIN'}],
+            [{text: 'Купить 5 проверок (20$)', callback_data: 'FiveCheckVIN'}]
         ]
     })
 }
@@ -118,6 +117,8 @@ const start = () => {
         }
     })
 
+
+    // block for sending messages (only for Danila) --------------
     bot.on('photo', async msg => {
         const chatId = msg.chat.id
         if (chatId === danila_ID) {
@@ -146,41 +147,112 @@ const start = () => {
             })
         }
     })
+    const payId = []
 
+    // payment block -----------------------------
     bot.on('callback_query', async msg => {
         const data = msg.data
         const chatId = msg.message.chat.id
 
         if (data === 'OneCheckVIN') {
-            // await response success and add one point opposite id
-           await bot.sendInvoice(
+            await bot.sendInvoice(
                 chatId,
-                '1 Проверка',
+                '1 check VIN',
                 'Одина раз вы можете получить информацию об авто по VIN номеру',
                 'payload',
                 tokenPayment,
                 'RUB',
                 [{
                     label: 'check',
-                    amount: 8500
+                    amount: 45000
                 }]
             )
-
-
-
-            await listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 1 : listUsersWithCheckPoints[msg.from.id] = 1
-            return bot.sendMessage(chatId, 'Вы приобрели одну проверку по VIN номеру', KEYBOARD)
+            await bot.on('pre_checkout_query', async ctx => {
+                try {
+                    return bot.answerPreCheckoutQuery(ctx.id, true)
+                } catch (error) {
+                    return bot.sendMessage(ctx.id, 'Ошибка платежа')
+                }
+            })
+            await bot.on('successful_payment', async ctx => {
+                try {
+                    if (payId.includes(ctx.message_id)) {return}
+                    payId.push(ctx.message_id)
+                    await bot.sendMessage(ctx.chat.id, `Спасибо за оплату`)
+                    await listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 1 : listUsersWithCheckPoints[msg.from.id] = 1
+                    return bot.sendMessage(ctx.chat.id, 'Вы приобрели одну проверку по VIN номеру', KEYBOARD)
+                } catch (error) {
+                    await bot.sendMessage(ctx.chat.id, `Ошибка оплаты`)
+                }
+            })
         }
+
+
         if (data === 'ThreeCheckVIN') {
-            // await response success and add one point opposite id
-            listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 3 : listUsersWithCheckPoints[msg.from.id] = 3
-            return bot.sendMessage(chatId, 'Вы приобрели 3 проверки по VIN номеру', KEYBOARD)
+            await bot.sendInvoice(
+                chatId,
+                '3 checks VIN',
+                'Три раз вы можете получить информацию об авто по VIN номеру',
+                'payload3',
+                tokenPayment,
+                'RUB',
+                [{
+                    label: 'check',
+                    amount: 89000
+                }]
+            )
+            await bot.on('pre_checkout_query', async ctx => {
+                try {
+                    return bot.answerPreCheckoutQuery(ctx.id, true)
+                } catch (error) {
+                    return bot.sendMessage(ctx.id, 'Ошибка платежа')
+                }
+            })
+            await bot.on('successful_payment', async ctx => {
+                try {
+                    if (payId.includes(ctx.message_id)) {return}
+                    payId.push(ctx.message_id)
+                    await bot.sendMessage(ctx.chat.id, `Спасибо за оплату`)
+                    await listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 3 : listUsersWithCheckPoints[msg.from.id] = 3
+                    return bot.sendMessage(chatId, 'Вы приобрели 3 проверки по VIN номеру', KEYBOARD)
+                } catch (error) {
+                    await bot.sendMessage(ctx.chat.id, `Ошибка оплаты`)
+                }
+            })
         }
-        if (data === 'FiveCheckVIN') {
-            // await response success and add one point opposite id
-            listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 5 : listUsersWithCheckPoints[msg.from.id] = 5
-            await bot.sendMessage(chatId, 'Вы приобрели 5 проверок по VIN номеру', KEYBOARD)
 
+
+        if (data === 'FiveCheckVIN') {
+            await bot.sendInvoice(
+                chatId,
+                '5 checks VIN',
+                'Пять раз вы можете получить информацию об авто по VIN номеру',
+                'payload5',
+                tokenPayment,
+                'RUB',
+                [{
+                    label: 'check',
+                    amount: 99000
+                }]
+            )
+            await bot.on('pre_checkout_query', async ctx => {
+                try {
+                    return bot.answerPreCheckoutQuery(ctx.id, true)
+                } catch (error) {
+                    return bot.sendMessage(ctx.id, 'Ошибка платежа')
+                }
+            })
+            await bot.on('successful_payment', async ctx => {
+                try {
+                    if (payId.includes(ctx.message_id)) {return}
+                    payId.push(ctx.message_id)
+                    await bot.sendMessage(ctx.chat.id, `Спасибо за оплату`)
+                    await listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 5 : listUsersWithCheckPoints[msg.from.id] = 5
+                    return bot.sendMessage(chatId, 'Вы приобрели 5 проверок по VIN номеру', KEYBOARD)
+                } catch (error) {
+                    await bot.sendMessage(ctx.chat.id, `Ошибка оплаты`)
+                }
+            })
         }
     })
 }
