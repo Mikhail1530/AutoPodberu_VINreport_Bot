@@ -91,7 +91,7 @@ const start = () => {
 
         if (match[0].length === 17 && Object.keys(listUsersWithCheckPoints).includes(`${msg.from.id}`)) {
             //  запрос за проверкой по VIN - сделать try catch
-            await bot.sendMessage(msg.chat.id, 'Запрос сделан', KEYBOARD)
+            await bot.sendMessage(msg.chat.id, 'Запрос сделан')
             // if request is valid -> listChecksAll += 1 and listChecksPerMonth += 1
             listUsersWithCheckPoints[msg.from.id] > 0 ? listUsersWithCheckPoints[msg.from.id] -= 1 : await bot.sendMessage(msg.chat.id, 'У вас не осталось проверок', KEYBOARD)
             listChecksAll += 1
@@ -147,10 +147,9 @@ const start = () => {
             })
         }
     })
-    const payId = []
 
     // payment block -----------------------------
-    bot.on('callback_query', async msg => {
+    bot.on('callback_query', async (msg) => {
         const data = msg.data
         const chatId = msg.message.chat.id
 
@@ -159,7 +158,7 @@ const start = () => {
                 chatId,
                 '1 check VIN',
                 'Одина раз вы можете получить информацию об авто по VIN номеру',
-                'payload',
+                msg.id,
                 tokenPayment,
                 'RUB',
                 [{
@@ -171,18 +170,18 @@ const start = () => {
                 try {
                     return bot.answerPreCheckoutQuery(ctx.id, true)
                 } catch (error) {
-                    return bot.sendMessage(ctx.id, 'Ошибка платежа')
+                    return error ? bot.sendMessage(ctx.id, 'Ошибка платежа') : ''
                 }
             })
             await bot.on('successful_payment', async ctx => {
                 try {
-                    if (payId.includes(ctx.message_id)) {return}
-                    payId.push(ctx.message_id)
-                    await bot.sendMessage(ctx.chat.id, `Спасибо за оплату`)
-                    await listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 1 : listUsersWithCheckPoints[msg.from.id] = 1
-                    return bot.sendMessage(ctx.chat.id, 'Вы приобрели одну проверку по VIN номеру', KEYBOARD)
+                    if (ctx.successful_payment.invoice_payload === msg.id) {
+                        await bot.sendMessage(ctx.chat.id, `Спасибо за оплату`)
+                        await listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 1 : listUsersWithCheckPoints[msg.from.id] = 1
+                        return bot.sendMessage(ctx.chat.id, 'Вы приобрели одну проверку по VIN номеру')
+                    }
                 } catch (error) {
-                    await bot.sendMessage(ctx.chat.id, `Ошибка оплаты`)
+                    return bot.sendMessage(ctx.chat.id, `Ошибка оплаты`)
                 }
             })
         }
@@ -193,7 +192,7 @@ const start = () => {
                 chatId,
                 '3 checks VIN',
                 'Три раз вы можете получить информацию об авто по VIN номеру',
-                'payload3',
+                msg.id,
                 tokenPayment,
                 'RUB',
                 [{
@@ -210,11 +209,11 @@ const start = () => {
             })
             await bot.on('successful_payment', async ctx => {
                 try {
-                    if (payId.includes(ctx.message_id)) {return}
-                    payId.push(ctx.message_id)
-                    await bot.sendMessage(ctx.chat.id, `Спасибо за оплату`)
-                    await listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 3 : listUsersWithCheckPoints[msg.from.id] = 3
-                    return bot.sendMessage(chatId, 'Вы приобрели 3 проверки по VIN номеру', KEYBOARD)
+                    if (ctx.successful_payment.invoice_payload === msg.id) {
+                        await bot.sendMessage(ctx.chat.id, `Спасибо за оплату`)
+                        await listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 3 : listUsersWithCheckPoints[msg.from.id] = 3
+                        return bot.sendMessage(chatId, 'Вы приобрели 3 проверки по VIN номеру', KEYBOARD)
+                    }
                 } catch (error) {
                     await bot.sendMessage(ctx.chat.id, `Ошибка оплаты`)
                 }
@@ -227,7 +226,7 @@ const start = () => {
                 chatId,
                 '5 checks VIN',
                 'Пять раз вы можете получить информацию об авто по VIN номеру',
-                'payload5',
+                msg.id,
                 tokenPayment,
                 'RUB',
                 [{
@@ -244,11 +243,11 @@ const start = () => {
             })
             await bot.on('successful_payment', async ctx => {
                 try {
-                    if (payId.includes(ctx.message_id)) {return}
-                    payId.push(ctx.message_id)
-                    await bot.sendMessage(ctx.chat.id, `Спасибо за оплату`)
-                    await listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 5 : listUsersWithCheckPoints[msg.from.id] = 5
-                    return bot.sendMessage(chatId, 'Вы приобрели 5 проверок по VIN номеру', KEYBOARD)
+                    if (ctx.successful_payment.invoice_payload === msg.id) {
+                        await bot.sendMessage(ctx.chat.id, `Спасибо за оплату`)
+                        await listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 5 : listUsersWithCheckPoints[msg.from.id] = 5
+                        return bot.sendMessage(chatId, 'Вы приобрели 5 проверок по VIN номеру', KEYBOARD)
+                    }
                 } catch (error) {
                     await bot.sendMessage(ctx.chat.id, `Ошибка оплаты`)
                 }
