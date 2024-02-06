@@ -14,7 +14,7 @@ const instance = axios.create({
     },
 });
 
-// variables to dataBase
+// variables to dataBase--------
 let listUsersWithCheckPoints = {}
 let listChecksPerMonth = 0
 let listChecksAll = 0
@@ -23,6 +23,7 @@ const danila_ID = 342056317
 // const danila_ID = 2133980094
 
 
+// variables rewritable--------
 let success = 0
 let notSend = 0
 const resetFunction = () => {
@@ -40,7 +41,7 @@ const KEYBOARD = {
     reply_markup: JSON.stringify({
         keyboard: [
             ['💳 Купить проверки ($)', '⚖ Проверить остаток проверок'],
-            ['✅ VIN'],
+            ['✅ VIN', '👍 Получить бесплатную проверку'],
         ],
         resize_keyboard: true
     })
@@ -78,8 +79,19 @@ const start = () => {
 
         if (match[0] == '/start') {
             !listChatIdUsers.includes(msg.chat.id) ? listChatIdUsers.push(msg.chat.id) : ''
-            return bot.sendMessage(msg.chat.id, 'Привет кукушкин 👋🏻, залетай на покупки. Подпишись туда-сюда и дадим проверку еблантий ты нелепый', KEYBOARD)
+            return bot.sendMessage(msg.chat.id, 'Привет кукушкин 👋🏻, залетай на покупки. Подпишись туда-сюда и будеш один раз проверку делать', KEYBOARD)
         }
+        if (match[0] == '👍 Получить бесплатную проверку') {
+            try {
+                bot.getChatMember('-1001815620648', 2133980094).then(res => {
+                    return bot.sendMessage(msg.chat.id, res.status !== 'left' ? 'Подписан' : 'Вы не подписаны на канал AutoPodberu, чтобы получить бесплатну проверку по VIN номеру необходимо подписаться на канал')
+                })
+            } catch (e) {
+                return bot.sendMessage(msg.chat.id, 'Ошибка')
+            }
+            return
+        }
+
 
         if (match[0] == '💳 Купить проверки ($)') {
             return bot.sendMessage(msg.chat.id, 'Выберете нужное количество', checksOptions)
@@ -103,7 +115,6 @@ const start = () => {
             return bot.sendMessage(msg.chat.id, `У вас осталось проверок: ${userChecks}`)
         }
 
-
         if (match[0] == '💌 Рассылка для контактов' && msg.from.id === danila_ID) {
             return bot.sendMessage(msg.chat.id, `\n<b>1) картинка и текст:</b> Отправляй фото и описание к ней.\n<b>2) просто текст:</b> Поставить звездочку (*) перед строкой.\n(<i>пример:</i> *куку галоши) `, {parse_mode: 'HTML'})
         }
@@ -118,7 +129,7 @@ const start = () => {
     })
 
 
-    // block for sending messages (only for Danila) --------------
+    // block for sending messages (only Danila can) --------------
     bot.on('photo', async msg => {
         const chatId = msg.chat.id
         if (chatId === danila_ID) {
@@ -147,6 +158,7 @@ const start = () => {
             })
         }
     })
+
 
     // payment block -----------------------------
     bot.on('callback_query', async (msg) => {
