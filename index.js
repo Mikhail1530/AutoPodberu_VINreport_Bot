@@ -18,10 +18,13 @@ const instance = axios.create({
 let listUsersWithCheckPoints = {}
 let listChecksPerMonth = 0
 let listChecksAll = 0
+let listChecksAllFree = []
 let listChatIdUsers = ['2133980094', '2133980092', '2133980194', '2133980192', '2133280194']
+
+// static variables---------
 const danila_ID = 342056317
 // const danila_ID = 2133980094
-
+const telegramChannelId = '-1001815620648'
 
 // variables rewritable--------
 let success = 0
@@ -83,8 +86,17 @@ const start = () => {
         }
         if (match[0] == '👍 Получить бесплатную проверку') {
             try {
-                bot.getChatMember('-1001815620648', 2133980094).then(res => {
-                    return bot.sendMessage(msg.chat.id, res.status !== 'left' ? 'Подписан' : 'Вы не подписаны на канал AutoPodberu, чтобы получить бесплатну проверку по VIN номеру необходимо подписаться на канал')
+                bot.getChatMember(telegramChannelId, msg.chat.id).then(res => {
+                    if (listChecksAllFree.includes(msg.chat.id)) {
+                        return bot.sendMessage(msg.chat.id, 'Вы уже получили бесплатную проверку за подписку на канал', {parse_mode: 'HTML'})
+                    }
+                    if (res.status === 'left') {
+                        return bot.sendMessage(msg.chat.id, "Вы не подписаны на канал AutoPodberu, чтобы получить бесплатну проверку по VIN номеру необходимо подписаться на канал <b>t.me/autopodberu</b>", {parse_mode: 'HTML'})
+                    } else {
+                        listChecksAllFree.push(msg.chat.id)
+                        listUsersWithCheckPoints[msg.from.id] ? listUsersWithCheckPoints[msg.from.id] += 1 : listUsersWithCheckPoints[msg.from.id] = 1
+                        return bot.sendMessage(msg.chat.id, 'Вы подписаны на канал <b>AutoPodberu</b> и за это мы дарим вам одну бесплатную проверку по VIN номеру для авто', {parse_mode: 'HTML'})
+                    }
                 })
             } catch (e) {
                 return bot.sendMessage(msg.chat.id, 'Ошибка')
@@ -116,13 +128,13 @@ const start = () => {
         }
 
         if (match[0] == '💌 Рассылка для контактов' && msg.from.id === danila_ID) {
-            return bot.sendMessage(msg.chat.id, `\n<b>1) картинка и текст:</b> Отправляй фото и описание к ней.\n<b>2) просто текст:</b> Поставить звездочку (*) перед строкой.\n(<i>пример:</i> *куку галоши) `, {parse_mode: 'HTML'})
+            return bot.sendMessage(msg.chat.id, `\n<b>1) Чтобы отправить картинку и текст:</b> Просто отправляй фото и описание к ней.\n<b>2) Чтобы отправить просто текст:</b> Поставить звездочку (*) перед сообщением. (<i>пример:</i> *куку галоши) `, {parse_mode: 'HTML'})
         }
         if (match[0] == '🤙 Статистика последних отправленных' && msg.from.id === danila_ID) {
             await bot.sendMessage(msg.from.id, `\n<i>Сообщения получено:</i> ${success}\n<i>Сообщений не доставлено:</i> ${notSend}`, {parse_mode: 'HTML'})
         }
         if (match[0] == '☎ Статистика проверок' && msg.from.id === danila_ID) {
-            return bot.sendMessage(msg.chat.id, `\n<b>Всего проверок:</b> <i>${listChecksAll}</i>\n<b>Проверок за месяц:</b> <i>${listChecksPerMonth}</i>`, {parse_mode: 'HTML'})
+            return bot.sendMessage(msg.chat.id, `\n<b>Всего проверок:</b> <i>${listChecksAll}</i>\n<b>Проверок за месяц:</b> <i>${listChecksPerMonth}</i>\n<b>Активированные проверки за подписку:</b> <i>${listChecksAllFree.length}</i>`, {parse_mode: 'HTML'})
         } else {
             msg.chat.id !== danila_ID ? await bot.sendMessage(msg.chat.id, 'Неизвестная команда, выберете команду в меню кнопок') : ''
         }
