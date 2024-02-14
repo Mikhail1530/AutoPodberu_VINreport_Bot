@@ -171,15 +171,16 @@ const start = async () => {
                     await browser.close();
                     console.log(`PDF generated at: ${outputPath}`);
                 }
+
                 const vin = '5UXTA6C09P9P05179'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
                 const objToken = await fsPromises.readFile('../token.js', 'utf8')
                 const tokenVin = JSON.parse(objToken).token
-
+                console.log(tokenVin)
                 await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenVin}`},
                     responseType: "arraybuffer"
-                }).then(res=>console.log('1', res)).catch(e=> console.log('2',e))
+                }).then(res => console.log('1', res)).catch(e => console.log('2', e))
                 // await fsPromises.writeFile(`./${chatId}file.html`, data, {encoding: 'binary'});
                 await htmlToPdf(data, `./${chatId}file.pdf`)
                 await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
