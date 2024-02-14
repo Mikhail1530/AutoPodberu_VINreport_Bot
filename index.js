@@ -118,7 +118,7 @@ const start = async () => {
             if (match[0].length === 17) {
                 const user = await Client.findOne({where: {chatId: chatId}})
                 if (user.checks === 0) {
-                    return bot.sendMessage(chatId, 'К сожалению, у вас не осталось проверок по VIN номеру.\n\nНо вы всегда можете их приобрести нажав на кнопку <b>💳 Купить проверки ($)</b>', {parse_mode: 'HTML'})
+                    return bot.sendMessage(chatId, 'К сожалению, у вас нет доступных проверок по VIN номеру.\n\nНо вы всегда можете их приобрести нажав на кнопку <b>💳 Купить проверки ($)</b>', {parse_mode: 'HTML'})
                 }
 
                 if (user.checks > 0) {
@@ -176,10 +176,10 @@ const start = async () => {
                 const objToken = await fsPromises.readFile('../token.js', 'utf8')
                 const tokenVin = JSON.parse(objToken).token
 
-                const {data} = await instance.get(url, {
+                await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenVin}`},
                     responseType: "arraybuffer"
-                })
+                }).then(res=>console.log('1', res)).catch(e=> console.log('2',e))
                 // await fsPromises.writeFile(`./${chatId}file.html`, data, {encoding: 'binary'});
                 await htmlToPdf(data, `./${chatId}file.pdf`)
                 await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
