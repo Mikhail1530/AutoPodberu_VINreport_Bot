@@ -5,6 +5,7 @@ const bot = new TelegramApi(token, {polling: true})
 const fsPromises = require('fs').promises
 const sequelize = require('./db')
 const Client = require('./models')
+const puppeteer = require('puppeteer')
 
 
 const tokenPayment = '381764678:TEST:77012'
@@ -16,7 +17,6 @@ const instance = axios.create({
 const danila_ID = 342056317
 const telegramChannelId = '-1001815620648'
 const greetings = `<b>Приветствую тебя!</b> 👋 \n\nЯ - бот-специалист по отличным предложениям в выборе автомобиля, также я умею узнавать информацию об авто по VIN-номеру! \nБуду присылать тебе экспертные советы и интересные новости из мира авто. 🚗💨 \n\n<b><i><u>Подпишись на наш канал</u></i></b>, чтобы быть в курсе всех последних анонсов и эксклюзивных предложений + получи одну <b>бесплатную проверку</b> для авто. 💼🛣️\nt.me/autopodberu`
-// const danila_ID = 2133980094
 
 let success = 0
 let notSend = 0
@@ -83,7 +83,6 @@ const start = async () => {
                     return user && bot.sendMessage(chatId, 'Бот уже запущен', KEYBOARD)
                 }
             }
-
             if (match[0] === '👍 Бесплатная проверка') {
                 try {
                     const res = await bot.getChatMember(telegramChannelId, chatId)
@@ -110,21 +109,12 @@ const start = async () => {
                     return bot.sendMessage(chatId, 'Ошибка')
                 }
             }
-
-
             if (match[0] === '💳 Купить проверки ($)') {
                 return bot.sendMessage(chatId, '<i>Выберете нужное количество 🎳</i>', checksOptions)
             }
-
             if (match[0] === '✅ VIN') {
-                // let cc = Math.floor(new Date().getTime() / 1000)
-                // let obj = JSON.stringify({token: 'thisIsToken', date: cc})
-                // await fsPromises.writeFile('../token.js', obj)
-                // const rr = await fsPromises.readFile('../token.js', 'utf8')
-                // console.log(JSON.parse(rr).token)
                 return bot.sendMessage(chatId, 'Если у вас есть доступные проверки, то просто вбейте в строку ввода <b><i>VIN номер</i></b> (<i>17 символов</i>) и получите подробную информацию об автомобиле в <i>PDF-файле</i> 📂\n\nОстаток проверок можно узнать нажав на соответствующую кнопку ⚖', {parse_mode: 'HTML'})
             }
-
             if (match[0].length === 17) {
                 const user = await Client.findOne({where: {chatId: chatId}})
                 if (user.checks === 0) {
@@ -151,7 +141,7 @@ const start = async () => {
                     try {
                         const getToken = await fsPromises.readFile('../token.js', 'utf8')
                         const tokenVin = JSON.parse(getToken).token
-                        const {data} = instance.get(url, {
+                        const {data} = await instance.get(url, {
                             headers: {Authorization: `Bearer ${tokenVin}`},
                             responseType: "arraybuffer"
                         })
@@ -167,12 +157,38 @@ const start = async () => {
                     }
                 }
             }
-
             if (match[0] === '⚖ Узнать остаток проверок') {
                 const check = await Client.findOne({where: {chatId: chatId}})
                 return bot.sendMessage(chatId, `У вас осталось проверок: <b>${check.checks}</b>`, {parse_mode: 'HTML'})
             }
+            if (match[0] === 'convert') {
+                async function htmlToPdf(htmlContent, outputPath) {
+                    const browser = await puppeteer.launch();
+                    const page = await browser.newPage();
+                    await page.setContent(htmlContent);
+                    await page.pdf({path: outputPath, format: 'A4'});
 
+                    await browser.close();
+                    console.log(`PDF generated at: ${outputPath}`);
+                }
+                const vin = '5UXTA6C09P9P05179'
+                const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
+                const objToken = await fsPromises.readFile('../token.js', 'utf8')
+                const tokenVin = JSON.parse(objToken).token
+
+                const {data} = await instance.get(url, {
+                    headers: {Authorization: `Bearer ${tokenVin}`},
+                    responseType: "arraybuffer"
+                })
+                // await fsPromises.writeFile(`./${chatId}file.html`, data, {encoding: 'binary'});
+                await htmlToPdf(data, `./${chatId}file.pdf`)
+                await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                    filename: `${chatId}file.pdf`,
+                    contentType: 'application/pdf'
+                })
+                await fsPromises.unlink(`./${chatId}file.pdf`)
+
+            }
             // Block options Danila
             if (match[0] === '💌 Рассылка для контактов' && chatId === danila_ID) {
                 return bot.sendMessage(chatId, `\n<b>1) Чтобы разослать картинку и текст подписчикам:</b> <i>Просто отправляй фото и описание к ней.</i>\n\n<b>2) Чтобы отправить текст без картинки:</b> <i>Необходимо поставить две звездочки (**) перед сообщением. (например: **Привет человеки)</i>`, {parse_mode: 'HTML'})
@@ -246,13 +262,13 @@ const start = async () => {
             await bot.sendInvoice(
                 chatId,
                 '1 check VIN',
-                'Одина раз вы можете получить информацию об авто по VIN номеру',
+                'После оплаты вы сможете один раз получить информацию об авто по VIN номеру',
                 msg.id,
                 tokenPayment,
                 'RUB',
                 [{
                     label: 'check',
-                    amount: 45000
+                    amount: 38000
                 }]
             )
             await bot.on('pre_checkout_query', async ctx => {
@@ -280,13 +296,13 @@ const start = async () => {
             await bot.sendInvoice(
                 chatId,
                 '3 checks VIN',
-                'Три раз вы можете получить информацию об авто по VIN номеру',
+                'После оплаты вы сможете три раза получить информацию об авто по VIN номеру',
                 msg.id,
                 tokenPayment,
                 'RUB',
                 [{
                     label: 'check',
-                    amount: 89000
+                    amount: 102600
                 }]
             )
             await bot.on('pre_checkout_query', async ctx => {
@@ -314,13 +330,13 @@ const start = async () => {
             await bot.sendInvoice(
                 chatId,
                 '5 checks VIN',
-                'Пять раз вы можете получить информацию об авто по VIN номеру',
+                'После оплаты вы сможете пять раз запросить информацию об авто по VIN номеру',
                 msg.id,
                 tokenPayment,
                 'RUB',
                 [{
                     label: 'check',
-                    amount: 99000
+                    amount: 152000
                 }]
             )
             await bot.on('pre_checkout_query', async ctx => {
