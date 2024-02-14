@@ -3,10 +3,8 @@ const axios = require('axios')
 const token = '6838248687:AAE1ohr2ciZL26u1RtLsRqH9p0cd2EBmNdI'
 const bot = new TelegramApi(token, {polling: true})
 const fsPromises = require('fs').promises
-const fs = require('fs')
 const sequelize = require('./db')
 const Client = require('./models')
-const {logger} = require("sequelize/lib/utils/logger");
 
 
 const tokenPayment = '381764678:TEST:77012'
@@ -15,11 +13,10 @@ const instance = axios.create({
 });
 
 // static variables---------
-// const danila_ID = 342056317
-// const danila_ID = 342056311
+const danila_ID = 342056317
 const telegramChannelId = '-1001815620648'
-const greetings = `<b>Приветствую тебя!</b> 👋 \n\nЯ - твой надежный помощник в мире автомобилей, также я умею узнавать информацию об авто по VIN-номеру! \nБуду присылать тебе экспертные советы и интересные новости из мира авто. 🚗💨 \n\n<b><i><u>Подпишись на наш канал</u></i></b>, чтобы быть в курсе всех последних анонсов и эксклюзивных предложений + получи одну <b>бесплатную проверку</b> для авто. 💼🛣️\nt.me/autopodberu`
-const danila_ID = 2133980094
+const greetings = `<b>Приветствую тебя!</b> 👋 \n\nЯ - бот-специалист по отличным предложениям в выборе автомобиля, также я умею узнавать информацию об авто по VIN-номеру! \nБуду присылать тебе экспертные советы и интересные новости из мира авто. 🚗💨 \n\n<b><i><u>Подпишись на наш канал</u></i></b>, чтобы быть в курсе всех последних анонсов и эксклюзивных предложений + получи одну <b>бесплатную проверку</b> для авто. 💼🛣️\nt.me/autopodberu`
+// const danila_ID = 2133980094
 
 let success = 0
 let notSend = 0
@@ -47,9 +44,9 @@ const KEYBOARD_ADMIN = {
 const checksOptions = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
-            [{text: 'Купить 1 проверку (5$)', callback_data: 'OneCheckVIN'}],
-            [{text: 'Купить 3 проверки (14$)', callback_data: 'ThreeCheckVIN'}],
-            [{text: 'Купить 5 проверок (20$)', callback_data: 'FiveCheckVIN'}]
+            [{text: '1 проверка (380р или 4$)', callback_data: 'OneCheckVIN'}],
+            [{text: '3 проверки (1026р или 10.8$)', callback_data: 'ThreeCheckVIN'}],
+            [{text: '5 проверок (1520р или 16$)', callback_data: 'FiveCheckVIN'}]
         ]
     }),
     parse_mode: "HTML"
@@ -106,6 +103,8 @@ const start = async () => {
                     }
                     if (res.status === 'left') {
                         return bot.sendMessage(chatId, "Вы не подписаны на канал <i><b>AutoPodberu</b></i>, чтобы получить бесплатну проверку по VIN номеру необходимо подписаться на наш телеграм-канал <b>t.me/autopodberu</b>\n\nПосле подписки снова нажмите на кнопку <b>'👍 Получить бесплатную проверку'</b>\n\n", {parse_mode: 'HTML'})
+                    } else {
+                        await bot.sendMessage(chatId, 'Попробуйте еще раз нажать на кнопку')
                     }
                 } catch (e) {
                     return bot.sendMessage(chatId, 'Ошибка')
@@ -118,8 +117,11 @@ const start = async () => {
             }
 
             if (match[0] === '✅ VIN') {
-                // const res = await Client.findAll()
-                // console.log(res.map(u=>u["dataValues"]['chatId']))
+                // let cc = Math.floor(new Date().getTime() / 1000)
+                // let obj = JSON.stringify({token: 'thisIsToken', date: cc})
+                // await fsPromises.writeFile('../token.js', obj)
+                // const rr = await fsPromises.readFile('../token.js', 'utf8')
+                // console.log(JSON.parse(rr).token)
                 return bot.sendMessage(chatId, 'Если у вас есть доступные проверки, то просто вбейте в строку ввода <b><i>VIN номер</i></b> (<i>17 символов</i>) и получите подробную информацию об автомобиле в <i>PDF-файле</i> 📂\n\nОстаток проверок можно узнать нажав на соответствующую кнопку ⚖', {parse_mode: 'HTML'})
             }
 
@@ -128,14 +130,42 @@ const start = async () => {
                 if (user.checks === 0) {
                     return bot.sendMessage(chatId, 'К сожалению, у вас не осталось проверок по VIN номеру.\n\nНо вы всегда можете их приобрести нажав на кнопку <b>💳 Купить проверки ($)</b>', {parse_mode: 'HTML'})
                 }
+
                 if (user.checks > 0) {
                     await bot.sendMessage(chatId, 'Запрос займет немного времени, ожидайте')
                     const url = `report?vin=${msg.text}&format=pdf&reportTemplate=2021`
 
+                    const objTokenDate = await fsPromises.readFile('../token.js', 'utf8')
+                    const time = JSON.parse(objTokenDate).date
+                    const timeNow = Math.floor(new Date().getTime() / 1000)
 
+                    if ((timeNow - time) > 7140) {
+                        const result = await instance.post('login', {
+                            email: "autopodberu1+1@gmail.com",
+                            password: "TViGgDAg"
+                        })
+                        const obj = JSON.stringify({token: result.data.token, date: timeNow})
+                        await fsPromises.writeFile('../token.js', obj)
+                    }
+
+                    try {
+                        const getToken = await fsPromises.readFile('../token.js', 'utf8')
+                        const tokenVin = JSON.parse(getToken).token
+                        const {data} = instance.get(url, {
+                            headers: {Authorization: `Bearer ${tokenVin}`},
+                            responseType: "arraybuffer"
+                        })
+                        await fsPromises.writeFile(`./${chatId}file.pdf`, data, {encoding: 'binary'});
+                        await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                            filename: `${chatId}file.pdf`,
+                            contentType: 'application/pdf'
+                        })
+                        await fsPromises.unlink(`./${chatId}file.pdf`)
+                        await Client.decrement('checks', {by: 1, where: {chatId: chatId}})
+                    } catch (e) {
+                        await bot.sendMessage(chatId, 'Такого VIN номера в базе нет')
+                    }
                 }
-
-
             }
 
             if (match[0] === '⚖ Узнать остаток проверок') {
@@ -153,8 +183,8 @@ const start = async () => {
             if (match[0] === '☎ Статистика проверок' && chatId === danila_ID) {
                 const res = await Client.findAll()
                 const freeChecks = await Client.findAll({where: {freeCheck: true}})
-                const allChecks = res.map(c => c['dataValues']['checks']).reduce((acc, cur)=>{
-                    acc+=cur
+                const allChecks = res.map(c => c['dataValues']['checks']).reduce((acc, cur) => {
+                    acc += cur
                     return acc
                 }, 0)
                 // const freeChecks = res.map(c => c['dataValues']['freeChecks']).filter(c=>c === true)
@@ -236,7 +266,7 @@ const start = async () => {
                 try {
                     if (ctx.successful_payment.invoice_payload === msg.id) {
                         await bot.sendMessage(ctx.chat.id, `Спасибо за оплату`)
-                        await Client.increment('checks', {by: 1, where: {chatId: chatId}}).then(res=>console.log(res, '1')).catch(e=>console.log(e, '2'))
+                        await Client.increment('checks', {by: 1, where: {chatId: chatId}})
                         return bot.sendMessage(ctx.chat.id, 'Вы приобрели одну проверку по VIN номеру')
                     }
                 } catch (error) {
