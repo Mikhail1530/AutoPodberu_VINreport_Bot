@@ -161,28 +161,36 @@ const start = async () => {
                 const check = await Client.findOne({where: {chatId: chatId}})
                 return bot.sendMessage(chatId, `У вас осталось проверок: <b>${check.checks}</b>`, {parse_mode: 'HTML'})
             }
+
+
+
+
             if (match[0] === 'convert') {
-                async function htmlToPdf(htmlContent, outputPath) {
+                async function convertHTMLtoPDF(htmlFilePath, pdfFilePath) {
                     const browser = await puppeteer.launch();
                     const page = await browser.newPage();
-                    await page.setContent(htmlContent);
-                    await page.pdf({path: outputPath, format: 'A4'});
+
+                    const html = await fsPromises.readFile(htmlFilePath, 'utf8');
+
+                    await page.setContent(html);
+                    await page.pdf({ path: pdfFilePath, format: 'A4' });
 
                     await browser.close();
-                    console.log(`PDF generated at: ${outputPath}`);
                 }
-
                 const vin = '5UXTA6C09P9P05179'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
                 const objToken = await fsPromises.readFile('../token.js', 'utf8')
                 const tokenVin = JSON.parse(objToken).token
-                console.log(tokenVin)
-                await instance.get(url, {
+                const {data} = await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenVin}`},
                     responseType: "arraybuffer"
-                }).then(res => console.log('1', res)).catch(e => console.log('2', e))
-                // await fsPromises.writeFile(`./${chatId}file.html`, data, {encoding: 'binary'});
-                await htmlToPdf(data, `./${chatId}file.pdf`)
+                })
+
+
+                await fsPromises.writeFile(`./${chatId}file.html`, data, {encoding: 'binary'});
+
+                await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
+
                 await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                     filename: `${chatId}file.pdf`,
                     contentType: 'application/pdf'
@@ -190,6 +198,12 @@ const start = async () => {
                 await fsPromises.unlink(`./${chatId}file.pdf`)
 
             }
+
+
+
+
+
+
             // Block options Danila
             if (match[0] === '💌 Рассылка для контактов' && chatId === danila_ID) {
                 return bot.sendMessage(chatId, `\n<b>1) Чтобы разослать картинку и текст подписчикам:</b> <i>Просто отправляй фото и описание к ней.</i>\n\n<b>2) Чтобы отправить текст без картинки:</b> <i>Необходимо поставить две звездочки (**) перед сообщением. (например: **Привет человеки)</i>`, {parse_mode: 'HTML'})
