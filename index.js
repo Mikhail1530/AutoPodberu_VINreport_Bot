@@ -185,17 +185,17 @@ const start = async () => {
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
                 // const objToken = await fsPromises.readFile('../token.js', 'utf8')
                 // const tokenVin = JSON.parse(objToken).token
-                const res = await instance.get(url, {
+                const {data} = await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
-                console.log(res.result.html_report)
-                // await fsPromises.writeFile(`./${chatId}file.html`, res.result.html_report, 'utf8');
-                // await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
-                // await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                //     filename: `${chatId}file.pdf`,
-                //     contentType: 'application/pdf'
-                // })
-                // await fsPromises.unlink(`./${chatId}file.pdf`)
+
+                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report, 'utf8');
+                await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
+                await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                    filename: `${chatId}file.pdf`,
+                    contentType: 'application/pdf'
+                })
+                await fsPromises.unlink(`./${chatId}file.pdf`)
             }
 
 
