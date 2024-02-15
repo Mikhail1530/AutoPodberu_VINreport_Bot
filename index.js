@@ -187,7 +187,7 @@ const start = async () => {
                     });
 
 
-                bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                     filename: `${chatId}file.pdf`,
                     contentType: 'application/pdf'
                 }).catch(e => console.log(e))
