@@ -188,14 +188,14 @@ const start = async () => {
                 const {data} = await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
-
-                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report, 'utf8');
-                await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
-                await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                    filename: `${chatId}file.pdf`,
-                    contentType: 'application/pdf'
-                })
-                await fsPromises.unlink(`./${chatId}file.pdf`)
+                console.log(data.result)
+                // await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report, 'utf8');
+                // await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
+                // await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                //     filename: `${chatId}file.pdf`,
+                //     contentType: 'application/pdf'
+                // })
+                // await fsPromises.unlink(`./${chatId}file.pdf`)
             }
 
 
