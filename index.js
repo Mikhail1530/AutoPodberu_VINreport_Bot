@@ -195,7 +195,7 @@ const start = async () => {
                 //     contentType: 'application/pdf'
                 // })
                 await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                    filename: `${chatId}file.pdf`,
+                    filename: `${chatId}file.html`,
                     contentType: 'application/html'
                 })
                 await fsPromises.unlink(`./${chatId}file.html`)
