@@ -181,12 +181,12 @@ const start = async () => {
                         return console.log(err)
                     }
                     console.log('PDF generated successfully:', res);
+                     bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                        filename: `${chatId}file.pdf`,
+                        contentType: 'application/pdf'
+                    }).catch(e=>console.log(e))
                 })
 
-                await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                    filename: `${chatId}file.pdf`,
-                    contentType: 'application/pdf'
-                })
 
                 await fsPromises.unlink(`./${chatId}file.html`)
                 await fsPromises.unlink(`./${chatId}file.pdf`)
