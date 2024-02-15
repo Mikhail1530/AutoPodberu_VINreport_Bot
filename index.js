@@ -168,37 +168,38 @@ const start = async () => {
 
 
             if (match[0] === 'convert') {
-                // const vin = '5TDYK3DC8DS290235'
-                // const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-                // const {data} = await instance.get(url, {
-                //     headers: {Authorization: `Bearer ${tokenTest}`},
-                // })
-                // await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                //
-                // const doc = new PDFDocument();
-                // const writeStream = fs.createWriteStream(`./${chatId}file.pdf`);
-                //
-                // doc.pipe(writeStream);
-                //
-                // fs.readFile(`./${chatId}file.html`, 'utf-8', async (err, htmlContent) => {
-                //     if (err) {
-                //         console.error('Error reading HTML file:', err);
-                //         return;
-                //     }
-                //
-                //     // Convert HTML content to PDF
-                //     doc.text(htmlContent);
-                //
-                //     // Finalize the PDF document
-                //     doc.end();
-                //
-                //     console.log('PDF created successfully: output.pdf');
-                // });
-
-                return  bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                    filename: `${chatId}file.pdf`,
-                    contentType: 'application/pdf'
+                const vin = '5TDYK3DC8DS290235'
+                const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
+                const {data} = await instance.get(url, {
+                    headers: {Authorization: `Bearer ${tokenTest}`},
                 })
+                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
+
+                const doc = new PDFDocument();
+                const writeStream = fs.createWriteStream(`./${chatId}file.pdf`);
+
+                doc.pipe(writeStream);
+
+                fs.readFile(`./${chatId}file.html`, 'utf-8', async (err, htmlContent) => {
+                    if (err) {
+                        console.error('Error reading HTML file:', err);
+                        return;
+                    }
+
+                    // Convert HTML content to PDF
+                    doc.text(htmlContent);
+
+                    // Finalize the PDF document
+                    doc.end();
+
+                    console.log('PDF created successfully: output.pdf');
+                });
+                setTimeout(() => {
+                    return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                        filename: `${chatId}file.pdf`,
+                        contentType: 'application/pdf'
+                    })
+                }, 8000)
 
                 // await fsPromises.unlink(`./${chatId}file.html`)
                 // await fsPromises.unlink(`./${chatId}file.pdf`)
