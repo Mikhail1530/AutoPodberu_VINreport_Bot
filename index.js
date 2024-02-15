@@ -3,7 +3,7 @@ const axios = require('axios')
 const token = '6838248687:AAE1ohr2ciZL26u1RtLsRqH9p0cd2EBmNdI'
 const bot = new TelegramApi(token, {polling: true})
 const fsPromises = require('fs').promises
-const fs = require('fs')
+const pdfConverter = require('wkhtmltopdf')
 const sequelize = require('./db')
 const Client = require('./models')
 const pdf = require('html-pdf');
@@ -175,18 +175,7 @@ const start = async () => {
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
 
 
-                const options = {format: 'Letter'}
-                const pdfWriteStream = fs.createWriteStream(`./${chatId}file.pdf`);
-
-                fs.createReadStream(`./${chatId}file.html`, 'utf-8')
-                    .pipe(pdf.create(options))
-                    .pipe(pdfWriteStream)
-                    .on('finish', () => {
-                        console.log('PDF created successfully: output.pdf');
-                    })
-                    .on('error', err => {
-                        console.error('Error:', err);
-                    });
+               await pdfConverter(`./${chatId}file.html`, {output: `./${chatId}file.pdf`})
 
 
 
