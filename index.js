@@ -6,8 +6,9 @@ const fsPromises = require('fs').promises
 const sequelize = require('./db')
 const Client = require('./models')
 const pdf = require('html-pdf');
-const fs = require('fs');
 const PDFDocument = require('pdfkit');
+const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 const tokenPayment = '381764678:TEST:77012'
 const instance = axios.create({
@@ -175,25 +176,21 @@ const start = async () => {
                 })
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
 
-                const doc = new PDFDocument();
-                const writeStream = fs.createWriteStream(`./${chatId}file.pdf`);
+                const convert = async () => {
+                    const browser = await puppeteer.launch();
+                    const page = await browser.newPage();
 
-                doc.pipe(writeStream);
+                    // Read HTML file content
+                    const htmlFilePath = `./${chatId}file.html`;
+                    const htmlContent = await fs.promises.readFile(htmlFilePath, 'utf8');
 
-                fs.readFile(`./${chatId}file.html`, 'utf8', async (err, htmlContent) => {
-                    if (err) {
-                        console.error('Error reading HTML file:', err);
-                        return;
-                    }
+                    // Set HTML content and render PDF
+                    await page.setContent(htmlContent);
+                    await page.pdf({ path: `./${chatId}file.pdf`, format: 'A4' });
 
-                    // Convert HTML content to PDF
-                    doc.text(htmlContent);
-
-                    // Finalize the PDF document
-                    doc.end();
-
-                    console.log('PDF created successfully: output.pdf');
-                });
+                    await browser.close();
+                }
+                await convert()
                 setTimeout(() => {
                     return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                         filename: `${chatId}file.pdf`,
