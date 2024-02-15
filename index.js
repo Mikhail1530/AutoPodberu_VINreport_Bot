@@ -175,19 +175,17 @@ const start = async () => {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-
+                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                    filename: `${chatId}file.html`,
+                    contentType: 'application/html'
+                })
                 const convert = async () => {
                     let browser = await puppeteer.launch({ executablePath: '/usr/bin/chromium-browser', args: ['--no-sandbox'] })
                     const page = await browser.newPage();
-
-                    // Read HTML file content
                     const htmlFilePath = `./${chatId}file.html`;
                     const htmlContent = await fs.promises.readFile(htmlFilePath, 'utf8');
-
-                    // Set HTML content and render PDF
                     await page.setContent(htmlContent);
-                    await page.pdf({path: `./${chatId}file.pdf`, format: 'A4'});
-
+                    await page.pdf({path: `./${chatId}file.pdf`, format: 'A4', printBackground: true});
                     await browser.close();
                 }
                 await convert().then(res=> {
