@@ -3,10 +3,11 @@ const axios = require('axios')
 const token = '6838248687:AAE1ohr2ciZL26u1RtLsRqH9p0cd2EBmNdI'
 const bot = new TelegramApi(token, {polling: true})
 const fsPromises = require('fs').promises
-const pdfConverter = require('wkhtmltopdf')
 const sequelize = require('./db')
 const Client = require('./models')
 const pdf = require('html-pdf');
+const fs = require('fs');
+const PDFDocument = require('pdfkit');
 
 const tokenPayment = '381764678:TEST:77012'
 const instance = axios.create({
@@ -174,15 +175,30 @@ const start = async () => {
                 })
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
 
+                const doc = new PDFDocument();
+                const writeStream = fs.createWriteStream(`./${chatId}file.pdf`);
 
-                await pdfConverter(`./${chatId}file.html`, {output: `./${chatId}file.pdf`}).then(res => {
+                doc.pipe(writeStream);
 
+                fs.readFile(`./${chatId}file.html`, 'utf-8', async (err, htmlContent) => {
+                    if (err) {
+                        console.error('Error reading HTML file:', err);
+                        return;
+                    }
 
-                    return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                    // Convert HTML content to PDF
+                    doc.text(htmlContent);
+
+                    // Finalize the PDF document
+                    doc.end();
+
+                    console.log('PDF created successfully: output.pdf');
+                    await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                         filename: `${chatId}file.pdf`,
                         contentType: 'application/pdf'
-                    }).catch(e => console.log(e))
-                }).catch(e=>console.log(e))
+                    })
+                });
+
 
                 await fsPromises.unlink(`./${chatId}file.html`)
                 await fsPromises.unlink(`./${chatId}file.pdf`)
