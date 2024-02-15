@@ -189,7 +189,7 @@ const start = async () => {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
                 console.log(data.result.html_report)
-                await fsPromises.writeFile(`./${chatId}file.html`, data.result);
+                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
                 // await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
                 await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
                     filename: `${chatId}file.pdf`,
