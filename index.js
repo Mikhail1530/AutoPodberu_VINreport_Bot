@@ -177,7 +177,9 @@ const start = async () => {
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
 
                 const convert = async () => {
-                    const browser = await puppeteer.launch();
+                    const browser = await puppeteer.launch({
+                        executablePath: '/usr/bin/chromium-browser'
+                    })
                     const page = await browser.newPage();
 
                     // Read HTML file content
@@ -186,11 +188,11 @@ const start = async () => {
 
                     // Set HTML content and render PDF
                     await page.setContent(htmlContent);
-                    await page.pdf({ path: `./${chatId}file.pdf`, format: 'A4' });
+                    await page.pdf({path: `./${chatId}file.pdf`, format: 'A4'});
 
                     await browser.close();
                 }
-                await convert().catch(e=>console.log(e))
+                await convert().catch(e => console.log(e))
                 setTimeout(() => {
                     return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                         filename: `${chatId}file.pdf`,
