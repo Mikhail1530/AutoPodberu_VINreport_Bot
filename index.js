@@ -189,7 +189,8 @@ const start = async () => {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                     // responseType: "arraybuffer"
                 })
-                console.log(typeof data === 'arraybuffer')
+                const dataBuffer = new ArrayBuffer( data )
+                console.log(ArrayBuffer.isView(dataBuffer))
 
                 // await fsPromises.writeFile(`./${chatId}file.html`, data, {encoding: 'binary'});
                 // await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
