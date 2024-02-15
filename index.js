@@ -180,7 +180,7 @@ const start = async () => {
                         return pdf.create(htmlContent).toFile(`./${chatId}file.pdf`);
                     })
                     .then(res => {
-                        console.log('PDF created successfully:', res.filename);
+                        console.log('PDF created successfully:');
                     })
                     .catch(err => {
                         console.error('Error:', err);
