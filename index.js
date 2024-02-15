@@ -3,9 +3,9 @@ const axios = require('axios')
 const token = '6838248687:AAE1ohr2ciZL26u1RtLsRqH9p0cd2EBmNdI'
 const bot = new TelegramApi(token, {polling: true})
 const fsPromises = require('fs').promises
+const fs = require('fs')
 const sequelize = require('./db')
 const Client = require('./models')
-const puppeteer = require('puppeteer')
 const pdf = require('html-pdf');
 
 const tokenPayment = '381764678:TEST:77012'
@@ -175,18 +175,19 @@ const start = async () => {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                const htmlFileRead = await fsPromises.readFile(`./${chatId}file.html`, 'utf8')
+                const htmlFileRead = fs.readFileSync(`./${chatId}file.html`, 'utf-8')
+
                 pdf.create(htmlFileRead).toFile(`./${chatId}file.pdf`, (err, res) => {
                     if (err) {
                         return console.log(err)
                     }
                     console.log('PDF generated successfully:', res);
-                    bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                        filename: `${chatId}file.pdf`,
-                        contentType: 'application/pdf'
-                    }).catch(e => console.log(e))
                 })
 
+                bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                    filename: `${chatId}file.pdf`,
+                    contentType: 'application/pdf'
+                }).catch(e => console.log(e))
 
                 await fsPromises.unlink(`./${chatId}file.html`)
                 await fsPromises.unlink(`./${chatId}file.pdf`)
