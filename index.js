@@ -174,17 +174,9 @@ const start = async () => {
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
 
 
-                fsPromises.readFile(`./${chatId}file.html`, 'utf-8')
-                    .then(htmlContent => {
-                        // Convert HTML to PDF
-                        return pdf.create(htmlContent).toFile(`./${chatId}file.pdf`);
-                    })
-                    .then(res => {
-                        console.log('PDF created successfully:');
-                    })
-                    .catch(err => {
-                        console.error('Error:', err);
-                    });
+                const html = await fsPromises.readFile(`./${chatId}file.html`, 'utf8')
+                const options = {format: 'Letter'}
+                pdf.create(html, options).toFile(`./${chatId}file.pdf`)
 
 
                 await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
