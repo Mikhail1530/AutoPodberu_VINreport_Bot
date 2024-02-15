@@ -21,6 +21,9 @@ const greetings = `<b>Приветствую тебя!</b> 👋 \n\nЯ - бот-
 let success = 0
 let notSend = 0
 
+const tokenTest = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VyIjp7ImlkIjoyMDg1MTEsImVtYWlsIjoiYXV0b3BvZGJlcnUxKzFAZ21haWwuY29tIn0sInZlbmRvciI6eyJpZCI6MjczLCJzdGF0dXMiOiJhY3RpdmUiLCJpcCI6WyIxNzIuMjAuMTAuMyIsIjU0Ljg2LjUwLjEzOSIsIjE4NS4xMTUuNC4xNDciLCIxODUuMTE1LjUuMjgiLCI1LjE4OC4xMjkuMjM2Il19LCJpYXQiOjE3MDc5MzM1ODksImV4cCI6MTcxMDUyNTU4OX0.t89d5DSDpQisJtJ9CCr_ZBlihPn61UcGKS8riI30AGY'
+
+
 const KEYBOARD = {
     reply_markup: JSON.stringify({
         keyboard: [
@@ -76,7 +79,7 @@ const start = async () => {
             }
             if (match[0] === '/start') {
                 try {
-                    await Client.create({chatId})
+                    await Client.create({chatId: chatId})
                     return bot.sendMessage(chatId, greetings, KEYBOARD)
                 } catch (e) {
                     const user = await Client.findOne({where: {chatId: chatId}})
@@ -179,24 +182,19 @@ const start = async () => {
                 }
                 const vin = '5UXTA6C09P9P05179'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-                const objToken = await fsPromises.readFile('../token.js', 'utf8')
-                const tokenVin = JSON.parse(objToken).token
+                // const objToken = await fsPromises.readFile('../token.js', 'utf8')
+                // const tokenVin = JSON.parse(objToken).token
                 const {data} = await instance.get(url, {
-                    headers: {Authorization: `Bearer ${tokenVin}`},
+                    headers: {Authorization: `Bearer ${tokenTest}`},
                     responseType: "arraybuffer"
                 })
-
-
                 await fsPromises.writeFile(`./${chatId}file.html`, data, {encoding: 'binary'});
-
                 await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
-
                 await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                     filename: `${chatId}file.pdf`,
                     contentType: 'application/pdf'
                 })
                 await fsPromises.unlink(`./${chatId}file.pdf`)
-
             }
 
 
