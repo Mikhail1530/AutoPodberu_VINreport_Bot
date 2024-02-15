@@ -175,14 +175,14 @@ const start = async () => {
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
 
 
-               await pdfConverter(`./${chatId}file.html`, {output: `./${chatId}file.pdf`})
+                await pdfConverter(`./${chatId}file.html`, {output: `./${chatId}file.pdf`}).then(res => {
 
 
-
-                await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                    filename: `${chatId}file.pdf`,
-                    contentType: 'application/pdf'
-                }).catch(e => console.log(e))
+                    return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                        filename: `${chatId}file.pdf`,
+                        contentType: 'application/pdf'
+                    }).catch(e => console.log(e))
+                }).catch(e=>console.log(e))
 
                 await fsPromises.unlink(`./${chatId}file.html`)
                 await fsPromises.unlink(`./${chatId}file.pdf`)
