@@ -181,21 +181,23 @@ const start = async () => {
 
                     await browser.close();
                 }
-                const vin = '5UXTA6C09P9P05179'
+                const vin = '5TDYK3DC8DS290235'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
                 // const objToken = await fsPromises.readFile('../token.js', 'utf8')
                 // const tokenVin = JSON.parse(objToken).token
                 const {data} = await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenTest}`},
-                    responseType: "arraybuffer"
+                    // responseType: "arraybuffer"
                 })
-                await fsPromises.writeFile(`./${chatId}file.html`, data, {encoding: 'binary'});
-                await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
-                await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                    filename: `${chatId}file.pdf`,
-                    contentType: 'application/pdf'
-                })
-                await fsPromises.unlink(`./${chatId}file.pdf`)
+                console.log(typeof data === 'arraybuffer')
+
+                // await fsPromises.writeFile(`./${chatId}file.html`, data, {encoding: 'binary'});
+                // await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
+                // await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                //     filename: `${chatId}file.pdf`,
+                //     contentType: 'application/pdf'
+                // })
+                // await fsPromises.unlink(`./${chatId}file.pdf`)
             }
 
 
