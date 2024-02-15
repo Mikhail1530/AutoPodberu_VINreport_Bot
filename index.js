@@ -192,13 +192,13 @@ const start = async () => {
 
                     await browser.close();
                 }
-                await convert().catch(e => console.log(e))
-                setTimeout(() => {
-                    return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                        filename: `${chatId}file.pdf`,
-                        contentType: 'application/pdf'
-                    })
-                }, 16000)
+                await convert().then(res=>console.log('Successful', res)).catch(e => console.log(e))
+                // setTimeout(() => {
+                //     return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                //         filename: `${chatId}file.pdf`,
+                //         contentType: 'application/pdf'
+                //     })
+                // }, 16000)
 
                 // await fsPromises.unlink(`./${chatId}file.html`)
                 // await fsPromises.unlink(`./${chatId}file.pdf`)
