@@ -175,16 +175,16 @@ const start = async () => {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-
-                pdf.create(`./${chatId}file.html`).toFile(`./${chatId}file.pdf`, (err, res) => {
+                const htmlFileRead = await fsPromises.readFile(`./${chatId}file.html`, 'utf8')
+                pdf.create(htmlFileRead).toFile(`./${chatId}file.pdf`, (err, res) => {
                     if (err) {
                         return console.log(err)
                     }
                     console.log('PDF generated successfully:', res);
-                     bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                    bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                         filename: `${chatId}file.pdf`,
                         contentType: 'application/pdf'
-                    }).catch(e=>console.log(e))
+                    }).catch(e => console.log(e))
                 })
 
 
