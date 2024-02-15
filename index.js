@@ -175,14 +175,31 @@ const start = async () => {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                const htmlFileRead = fs.readFileSync(`./${chatId}file.html`, 'utf-8')
 
-                pdf.create(htmlFileRead).toFile(`./${chatId}file.pdf`, (err, res) => {
+
+                // const htmlFileRead = fs.readFileSync(`./${chatId}file.html`, 'utf-8')
+
+                fs.readFile(`./${chatId}file.html`, 'utf-8', (err, htmlContent) => {
                     if (err) {
-                        return console.log(err)
+                        console.error('Error reading HTML file:', err);
+                        return;
                     }
-                    console.log('PDF generated successfully:', res);
-                })
+                    // Convert HTML to PDF
+                    pdf.create(htmlContent).toFile(`./${chatId}file.pdf`, (err, res) => {
+                        if (err) {
+                            console.error('Error creating PDF:', err);
+                            return;
+                        }
+                        console.log('PDF created successfully:', res.filename);
+                    });
+                });
+
+                // pdf.create(htmlFileRead).toFile(`./${chatId}file.pdf`, (err, res) => {
+                //     if (err) {
+                //         return console.log(err)
+                //     }
+                //     console.log('PDF generated successfully:', res);
+                // })
 
                 bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                     filename: `${chatId}file.pdf`,
