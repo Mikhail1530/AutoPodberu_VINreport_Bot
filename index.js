@@ -3,7 +3,6 @@ const axios = require('axios')
 const token = '6838248687:AAE1ohr2ciZL26u1RtLsRqH9p0cd2EBmNdI'
 const bot = new TelegramApi(token, {polling: true})
 const fsPromises = require('fs').promises
-const fs = require('fs')
 const sequelize = require('./db')
 const Client = require('./models')
 const pdf = require('html-pdf');
@@ -167,47 +166,34 @@ const start = async () => {
 
 
             if (match[0] === 'convert') {
+                const vin = '5TDYK3DC8DS290235'
+                const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
+                const {data} = await instance.get(url, {
+                    headers: {Authorization: `Bearer ${tokenTest}`},
+                })
+                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
 
 
-                // const vin = '5TDYK3DC8DS290235'
-                // const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-                // const {data} = await instance.get(url, {
-                //     headers: {Authorization: `Bearer ${tokenTest}`},
-                // })
-                // await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                //
-                //
-                // // const htmlFileRead = fs.readFileSync(`./${chatId}file.html`, 'utf-8')
-                //
-                // fs.readFile(`./${chatId}file.html`, 'utf-8', (err, htmlContent) => {
-                //     if (err) {
-                //         console.error('Error reading HTML file:', err);
-                //         return;
-                //     }
-                //     // Convert HTML to PDF
-                //     pdf.create(htmlContent).toFile(`./${chatId}file.pdf`, (err, res) => {
-                //         if (err) {
-                //             console.error('Error creating PDF:', err);
-                //             return;
-                //         }
-                //         console.log('PDF created successfully:', res.filename);
-                //     });
-                // });
+                fsPromises.readFile(`./${chatId}file.html`, 'utf-8')
+                    .then(htmlContent => {
+                        // Convert HTML to PDF
+                        return pdf.create(htmlContent).toFile(`./${chatId}file.pdf`);
+                    })
+                    .then(res => {
+                        console.log('PDF created successfully:', res.filename);
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                    });
 
-                // pdf.create(htmlFileRead).toFile(`./${chatId}file.pdf`, (err, res) => {
-                //     if (err) {
-                //         return console.log(err)
-                //     }
-                //     console.log('PDF generated successfully:', res);
-                // })
 
                 bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                     filename: `${chatId}file.pdf`,
                     contentType: 'application/pdf'
                 }).catch(e => console.log(e))
 
-                // await fsPromises.unlink(`./${chatId}file.html`)
-                // await fsPromises.unlink(`./${chatId}file.pdf`)
+                await fsPromises.unlink(`./${chatId}file.html`)
+                await fsPromises.unlink(`./${chatId}file.pdf`)
             }
 
 
