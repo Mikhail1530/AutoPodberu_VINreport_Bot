@@ -173,33 +173,26 @@ const start = async () => {
                 async function convertHTMLtoPDF(htmlFilePath, pdfFilePath) {
                     const browser = await puppeteer.launch();
                     const page = await browser.newPage();
-
                     const html = await fsPromises.readFile(htmlFilePath, 'utf8');
-
                     await page.setContent(html);
                     await page.pdf({ path: pdfFilePath, format: 'A4' });
-
                     await browser.close();
                 }
                 const vin = '5TDYK3DC8DS290235'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-                // const objToken = await fsPromises.readFile('../token.js', 'utf8')
-                // const tokenVin = JSON.parse(objToken).token
                 const {data} = await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                // await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
-                // await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                //     filename: `${chatId}file.pdf`,
-                //     contentType: 'application/pdf'
-                // })
-                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                    filename: `${chatId}file.html`,
-                    contentType: 'application/html'
+
+                await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
+
+                await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                    filename: `${chatId}file.pdf`,
+                    contentType: 'application/pdf'
                 })
                 await fsPromises.unlink(`./${chatId}file.html`)
-                // await fsPromises.unlink(`./${chatId}file.pdf`)
+                await fsPromises.unlink(`./${chatId}file.pdf`)
             }
 
 
