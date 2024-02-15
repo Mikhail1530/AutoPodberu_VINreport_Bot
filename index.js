@@ -198,7 +198,7 @@ const start = async () => {
                         filename: `${chatId}file.pdf`,
                         contentType: 'application/pdf'
                     })
-                }, 8000)
+                }, 16000)
 
                 // await fsPromises.unlink(`./${chatId}file.html`)
                 // await fsPromises.unlink(`./${chatId}file.pdf`)
