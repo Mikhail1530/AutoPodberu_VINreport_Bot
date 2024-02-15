@@ -190,7 +190,7 @@ const start = async () => {
 
                     await browser.close();
                 }
-                await convert()
+                await convert().catch(e=>console.log(e))
                 setTimeout(() => {
                     return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                         filename: `${chatId}file.pdf`,
