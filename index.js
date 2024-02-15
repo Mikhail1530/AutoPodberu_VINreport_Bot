@@ -193,10 +193,10 @@ const start = async () => {
                     doc.end();
 
                     console.log('PDF created successfully: output.pdf');
-                    await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                        filename: `${chatId}file.pdf`,
-                        contentType: 'application/pdf'
-                    })
+                    // await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                    //     filename: `${chatId}file.pdf`,
+                    //     contentType: 'application/pdf'
+                    // })
                 });
 
 
