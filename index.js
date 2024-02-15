@@ -165,7 +165,9 @@ const start = async () => {
                 return bot.sendMessage(chatId, `У вас осталось проверок: <b>${check.checks}</b>`, {parse_mode: 'HTML'})
             }
 
-
+            if (match[0] === 'drop') {
+                await Client.drop()
+            }
 
 
             if (match[0] === 'convert') {
