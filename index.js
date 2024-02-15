@@ -180,7 +180,7 @@ const start = async () => {
 
                 doc.pipe(writeStream);
 
-                fs.readFile(`./${chatId}file.html`, 'utf-8', async (err, htmlContent) => {
+                fs.readFile(`./${chatId}file.html`, 'base64', async (err, htmlContent) => {
                     if (err) {
                         console.error('Error reading HTML file:', err);
                         return;
