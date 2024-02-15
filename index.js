@@ -168,12 +168,7 @@ const start = async () => {
 
             if (match[0] === 'convert') {
 
-                function convertHTMLtoPDF(htmlContent, outputPath) {
-                    pdf.create(htmlContent).toFile(outputPath, (err, res) => {
-                        if (err) return console.log(err);
-                        console.log('PDF generated successfully:', res);
-                    });
-                }
+
                 const vin = '5TDYK3DC8DS290235'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
                 const {data} = await instance.get(url, {
@@ -181,13 +176,18 @@ const start = async () => {
                 })
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
 
-
-                await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
+                pdf.create(`./${chatId}file.html`).toFile(`./${chatId}file.pdf`, (err, res) => {
+                    if (err) {
+                        return console.log(err)
+                    }
+                    console.log('PDF generated successfully:', res);
+                })
 
                 await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
                     filename: `${chatId}file.pdf`,
                     contentType: 'application/pdf'
                 })
+
                 await fsPromises.unlink(`./${chatId}file.html`)
                 await fsPromises.unlink(`./${chatId}file.pdf`)
             }
