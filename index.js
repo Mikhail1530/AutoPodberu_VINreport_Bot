@@ -6,7 +6,7 @@ const fsPromises = require('fs').promises
 const sequelize = require('./db')
 const Client = require('./models')
 const puppeteer = require('puppeteer')
-
+const pdf = require('html-pdf');
 
 const tokenPayment = '381764678:TEST:77012'
 const instance = axios.create({
@@ -166,18 +166,14 @@ const start = async () => {
             }
 
 
-
-
             if (match[0] === 'convert') {
-                async function convertHTMLtoPDF(htmlFilePath, pdfFilePath) {
-                    const browser = await puppeteer.launch();
-                    const page = await browser.newPage();
-                    const html = await fsPromises.readFile(htmlFilePath, 'utf8');
-                    await page.setContent(html);
-                    await page.pdf({path: pdfFilePath, format: 'A4'});
-                    await browser.close();
-                }
 
+                function convertHTMLtoPDF(htmlContent, outputPath) {
+                    pdf.create(htmlContent).toFile(outputPath, (err, res) => {
+                        if (err) return console.log(err);
+                        console.log('PDF generated successfully:', res);
+                    });
+                }
                 const vin = '5TDYK3DC8DS290235'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
                 const {data} = await instance.get(url, {
@@ -186,18 +182,15 @@ const start = async () => {
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
 
 
-                await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`).then(res => {
+                await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
 
-                    return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                        filename: `${chatId}file.pdf`,
-                        contentType: 'application/pdf'
-                    })
-                }).catch(e => console.log(e))
+                await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                    filename: `${chatId}file.pdf`,
+                    contentType: 'application/pdf'
+                })
                 await fsPromises.unlink(`./${chatId}file.html`)
                 await fsPromises.unlink(`./${chatId}file.pdf`)
             }
-
-
 
 
             // Block options Danila
