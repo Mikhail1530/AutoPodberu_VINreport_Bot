@@ -187,17 +187,15 @@ const start = async () => {
                 // const tokenVin = JSON.parse(objToken).token
                 const {data} = await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenTest}`},
-                    // responseType: "arraybuffer"
                 })
-                console.log(data)
 
-                // await fsPromises.writeFile(`./${chatId}file.html`, data, {encoding: 'binary'});
-                // await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
-                // await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                //     filename: `${chatId}file.pdf`,
-                //     contentType: 'application/pdf'
-                // })
-                // await fsPromises.unlink(`./${chatId}file.pdf`)
+                await fsPromises.writeFile(`./${chatId}file.html`, data, 'utf8');
+                await convertHTMLtoPDF(`./${chatId}file.html`, `./${chatId}file.pdf`)
+                await bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
+                    filename: `${chatId}file.pdf`,
+                    contentType: 'application/pdf'
+                })
+                await fsPromises.unlink(`./${chatId}file.pdf`)
             }
 
 
