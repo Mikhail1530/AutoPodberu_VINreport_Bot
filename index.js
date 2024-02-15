@@ -177,9 +177,7 @@ const start = async () => {
                 await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
 
                 const convert = async () => {
-                    const browser = await puppeteer.launch({
-                        executablePath: '/usr/bin/chromium-browser'
-                    })
+                    let browser = await puppeteer.launch({ executablePath: '/usr/bin/chromium-browser', args: [ '--disable-gpu', '--disable-setuid-sandbox', '--no-sandbox', '--no-zygote' ] })
                     const page = await browser.newPage();
 
                     // Read HTML file content
