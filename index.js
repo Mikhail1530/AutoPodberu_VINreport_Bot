@@ -138,8 +138,7 @@ const start = async () => {
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
                 const res = await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenTest}`},
-                })
-                console.log(res)
+                }).catch(e=>console.log(e))
                 // await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
                 //
                 //
