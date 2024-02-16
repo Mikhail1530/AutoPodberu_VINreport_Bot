@@ -19,7 +19,7 @@ const greetings = `<b>Приветствую тебя!</b> 👋 \n\nЯ - бот-
 let success = 0
 let notSend = 0
 
-// const tokenTest = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VyIjp7ImlkIjoyMDg1MTEsImVtYWlsIjoiYXV0b3BvZGJlcnUxKzFAZ21haWwuY29tIn0sInZlbmRvciI6eyJpZCI6MjczLCJzdGF0dXMiOiJhY3RpdmUiLCJpcCI6WyIxNzIuMjAuMTAuMyIsIjU0Ljg2LjUwLjEzOSIsIjE4NS4xMTUuNC4xNDciLCIxODUuMTE1LjUuMjgiLCI1LjE4OC4xMjkuMjM2Il19LCJpYXQiOjE3MDc5MzM1ODksImV4cCI6MTcxMDUyNTU4OX0.t89d5DSDpQisJtJ9CCr_ZBlihPn61UcGKS8riI30AGY'
+const tokenTest = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VyIjp7ImlkIjoyMDg1MTEsImVtYWlsIjoiYXV0b3BvZGJlcnUxKzFAZ21haWwuY29tIn0sInZlbmRvciI6eyJpZCI6MjczLCJzdGF0dXMiOiJhY3RpdmUiLCJpcCI6WyIxNzIuMjAuMTAuMyIsIjU0Ljg2LjUwLjEzOSIsIjE4NS4xMTUuNC4xNDciLCIxODUuMTE1LjUuMjgiLCI1LjE4OC4xMjkuMjM2Il19LCJpYXQiOjE3MDc5MzM1ODksImV4cCI6MTcxMDUyNTU4OX0.t89d5DSDpQisJtJ9CCr_ZBlihPn61UcGKS8riI30AGY'
 
 
 const KEYBOARD = {
@@ -113,6 +113,44 @@ const start = async () => {
             if (match[0] === '💳 Купить проверки ($)') {
                 return bot.sendMessage(chatId, '<i>Выберете нужное количество 🎳</i>', checksOptions)
             }
+
+
+
+
+            if (match[0] === 'html') {
+                // tokenTest
+
+                // const vin = '2HKRW2H84MH615140'
+                // const url = `/report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
+                // const getToken = await fsPromises.readFile('../token.js', 'utf8')
+                // const tokenVin = JSON.parse(getToken).token
+                // const res = await instance.get(url, {
+                //     headers: {Authorization: `Bearer ${tokenVin}`},
+                // })
+                // await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
+                //
+                //
+                // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                //     filename: `${chatId}file.html`,
+                //     contentType: 'application/html'
+                // })
+                const vin = '55SWF4JB3GU099875'
+                const url = `/report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
+                const res = await instance.get(url, {
+                    headers: {Authorization: `Bearer ${tokenTest}`},
+                })
+                await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
+
+
+                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                    filename: `${chatId}file.html`,
+                    contentType: 'application/html'
+                })
+            }
+
+
+
+
             if (match[0] === '✅ VIN') {
                 return bot.sendMessage(chatId, 'Если у вас есть доступные проверки, то просто вбейте в строку ввода <b><i>VIN номер</i></b> (<i>17 символов</i>) и получите подробную информацию об автомобиле в <i>PDF-файле</i> 📂\n\nОстаток проверок можно узнать нажав на соответствующую кнопку ⚖', {parse_mode: 'HTML'})
             }
