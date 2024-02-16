@@ -134,7 +134,7 @@ const start = async () => {
                 //     filename: `${chatId}file.html`,
                 //     contentType: 'application/html'
                 // })
-                const vin = '55SWF4JB3GU099875'
+                const vin = '5TDYK3DC8DS290235'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
                 const res = await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenTest}`},
