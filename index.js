@@ -5,10 +5,6 @@ const bot = new TelegramApi(token, {polling: true})
 const fsPromises = require('fs').promises
 const sequelize = require('./db')
 const Client = require('./models')
-const pdf = require('html-pdf');
-const PDFDocument = require('pdfkit');
-const puppeteer = require('puppeteer');
-const fs = require('fs');
 
 const tokenPayment = '381764678:TEST:77012'
 const instance = axios.create({
@@ -23,7 +19,7 @@ const greetings = `<b>Приветствую тебя!</b> 👋 \n\nЯ - бот-
 let success = 0
 let notSend = 0
 
-const tokenTest = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VyIjp7ImlkIjoyMDg1MTEsImVtYWlsIjoiYXV0b3BvZGJlcnUxKzFAZ21haWwuY29tIn0sInZlbmRvciI6eyJpZCI6MjczLCJzdGF0dXMiOiJhY3RpdmUiLCJpcCI6WyIxNzIuMjAuMTAuMyIsIjU0Ljg2LjUwLjEzOSIsIjE4NS4xMTUuNC4xNDciLCIxODUuMTE1LjUuMjgiLCI1LjE4OC4xMjkuMjM2Il19LCJpYXQiOjE3MDc5MzM1ODksImV4cCI6MTcxMDUyNTU4OX0.t89d5DSDpQisJtJ9CCr_ZBlihPn61UcGKS8riI30AGY'
+// const tokenTest = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VyIjp7ImlkIjoyMDg1MTEsImVtYWlsIjoiYXV0b3BvZGJlcnUxKzFAZ21haWwuY29tIn0sInZlbmRvciI6eyJpZCI6MjczLCJzdGF0dXMiOiJhY3RpdmUiLCJpcCI6WyIxNzIuMjAuMTAuMyIsIjU0Ljg2LjUwLjEzOSIsIjE4NS4xMTUuNC4xNDciLCIxODUuMTE1LjUuMjgiLCI1LjE4OC4xMjkuMjM2Il19LCJpYXQiOjE3MDc5MzM1ODksImV4cCI6MTcxMDUyNTU4OX0.t89d5DSDpQisJtJ9CCr_ZBlihPn61UcGKS8riI30AGY'
 
 
 const KEYBOARD = {
@@ -166,39 +162,6 @@ const start = async () => {
                 const check = await Client.findOne({where: {chatId: chatId}})
                 return bot.sendMessage(chatId, `У вас осталось проверок: <b>${check.checks}</b>`, {parse_mode: 'HTML'})
             }
-
-
-            if (match[0] === 'convert') {
-                const vin = '5TDYK3DC8DS290235'
-                const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-                const {data} = await instance.get(url, {
-                    headers: {Authorization: `Bearer ${tokenTest}`},
-                })
-                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                    filename: `${chatId}file.html`,
-                    contentType: 'application/html'
-                })
-                const convert = async () => {
-                    let browser = await puppeteer.launch({ executablePath: '/usr/bin/chromium-browser', args: ['--no-sandbox'] })
-                    const page = await browser.newPage();
-                    const htmlFilePath = `./${chatId}file.html`;
-                    const htmlContent = await fs.promises.readFile(htmlFilePath, 'utf8');
-                    await page.setContent(htmlContent);
-                    await page.pdf({path: `./${chatId}file.pdf`, format: 'A4', printBackground: true});
-                    await browser.close();
-                }
-                await convert().then(res=> {
-                    return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                        filename: `${chatId}file.pdf`,
-                        contentType: 'application/pdf'
-                    })
-                }).catch(e => console.log('Error'))
-
-                // await fsPromises.unlink(`./${chatId}file.html`)
-                // await fsPromises.unlink(`./${chatId}file.pdf`)
-            }
-
 
             // Block options Danila
             if (match[0] === '💌 Рассылка для контактов' && chatId === danila_ID) {
