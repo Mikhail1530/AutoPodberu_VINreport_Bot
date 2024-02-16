@@ -135,18 +135,18 @@ const start = async () => {
                 //     contentType: 'application/html'
                 // })
                 const vin = '55SWF4JB3GU099875'
-                const url = `/report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
+                const url = `report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
                 const res = await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
                 console.log(res)
-                // await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
-                //
-                //
-                // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                //     filename: `${chatId}file.html`,
-                //     contentType: 'application/html'
-                // })
+                await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
+
+
+                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                    filename: `${chatId}file.html`,
+                    contentType: 'application/html'
+                })
             }
 
 
