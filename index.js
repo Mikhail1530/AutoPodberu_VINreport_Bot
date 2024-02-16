@@ -139,13 +139,14 @@ const start = async () => {
                 const res = await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
-                await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
-
-
-                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                    filename: `${chatId}file.html`,
-                    contentType: 'application/html'
-                })
+                console.log(res)
+                // await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
+                //
+                //
+                // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                //     filename: `${chatId}file.html`,
+                //     contentType: 'application/html'
+                // })
             }
 
 
