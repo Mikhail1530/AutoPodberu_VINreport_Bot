@@ -140,13 +140,13 @@ const start = async () => {
                     headers: {Authorization: `Bearer ${tokenTest}`},
                 })
                 console.log(res)
-                await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
-
-
-                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                    filename: `${chatId}file.html`,
-                    contentType: 'application/html'
-                })
+                // await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
+                //
+                //
+                // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                //     filename: `${chatId}file.html`,
+                //     contentType: 'application/html'
+                // })
             }
 
 
