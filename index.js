@@ -119,56 +119,29 @@ const start = async () => {
 
             if (match[0] === 'convert') {
                 // tokenTest
-                const vin = '2HKRW2H84MH615140'
-                const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-                const getToken = await fsPromises.readFile('../token.js', 'utf8')
-                const tokenVin = JSON.parse(getToken).token
-
-                const {data} = await instance.get(url, {
-                    headers: {Authorization: `Bearer ${tokenVin}`},
-                })
-                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                    filename: `${chatId}file.html`,
-                    contentType: 'application/html'
-                })
-                // const convert = async () => {
-                //     let browser = await puppeteer.launch({ executablePath: '/usr/bin/chromium-browser', args: ['--no-sandbox'] })
-                //     const page = await browser.newPage();
-                //     const htmlFilePath = `./${chatId}file.html`;
-                //     const htmlContent = await fs.promises.readFile(htmlFilePath, 'utf8');
-                //     await page.setContent(htmlContent);
-                //     await page.pdf({path: `./${chatId}file.pdf`, format: 'A4', printBackground: true});
-                //     await browser.close();
-                // }
-                // await convert().then(res=> {
-                //     return bot.sendDocument(chatId, `./${chatId}file.pdf`, {}, {
-                //         filename: `${chatId}file.pdf`,
-                //         contentType: 'application/pdf'
-                //     })
-                // }).catch(e => console.log('Error'))
-
-
+                // рабочий блок для HTML только надо ссылку правильно выдавать
                 // const vin = '2HKRW2H84MH615140'
-                // const url = `report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
+                // const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
                 // const getToken = await fsPromises.readFile('../token.js', 'utf8')
                 // const tokenVin = JSON.parse(getToken).token
-                // const res = await instance.get(url, {
+                //
+                // const {data} = await instance.get(url, {
                 //     headers: {Authorization: `Bearer ${tokenVin}`},
                 // })
-                // await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
-                //
-                //
+                // await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
                 // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
                 //     filename: `${chatId}file.html`,
                 //     contentType: 'application/html'
                 // })
-                // const vin = '2T1LR32E35C508537'
-                // const url = `report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
-                //  await instance.get(url, {
-                //     headers: {Authorization: `Bearer ${tokenTest}`},
-                // }).then(res=>console.log(res)).catch(e=>console.log(e))
-                // await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
+
+
+                const vin = '5TDYK3DC8DS290235'
+                const url = `report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
+                const {data} = await instance.get(url, {
+                    headers: {Authorization: `Bearer ${tokenTest}`},
+                })
+                console.log(data)
+                // await fsPromises.writeFile(`./${chatId}file.html`, data.result.report_html);
                 //
                 //
                 // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
