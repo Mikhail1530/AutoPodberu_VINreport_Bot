@@ -134,11 +134,11 @@ const start = async () => {
                 //     filename: `${chatId}file.html`,
                 //     contentType: 'application/html'
                 // })
-                const vin = '5TDYK3DC8DS290235'
+                const vin = '2T1LR32E35C508537'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
-                const res = await instance.get(url, {
+                 await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenTest}`},
-                }).catch(e=>console.log(e))
+                }).then(res=>console.log(res)).catch(e=>console.log(e))
                 // await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
                 //
                 //
