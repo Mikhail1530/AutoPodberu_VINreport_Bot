@@ -120,25 +120,25 @@ const start = async () => {
             if (match[0] === 'html') {
                 // tokenTest
 
-                // const vin = '2HKRW2H84MH615140'
-                // const url = `/report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
-                // const getToken = await fsPromises.readFile('../token.js', 'utf8')
-                // const tokenVin = JSON.parse(getToken).token
-                // const res = await instance.get(url, {
-                //     headers: {Authorization: `Bearer ${tokenVin}`},
-                // })
-                // await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
-                //
-                //
-                // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                //     filename: `${chatId}file.html`,
-                //     contentType: 'application/html'
-                // })
-                const vin = '2T1LR32E35C508537'
-                const url = `report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
-                 await instance.get(url, {
-                    headers: {Authorization: `Bearer ${tokenTest}`},
-                }).then(res=>console.log(res)).catch(e=>console.log(e))
+                const vin = '2HKRW2H84MH615140'
+                const url = `/report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
+                const getToken = await fsPromises.readFile('../token.js', 'utf8')
+                const tokenVin = JSON.parse(getToken).token
+                const res = await instance.get(url, {
+                    headers: {Authorization: `Bearer ${tokenVin}`},
+                })
+                await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
+
+
+                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                    filename: `${chatId}file.html`,
+                    contentType: 'application/html'
+                })
+                // const vin = '2T1LR32E35C508537'
+                // const url = `report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
+                //  await instance.get(url, {
+                //     headers: {Authorization: `Bearer ${tokenTest}`},
+                // }).then(res=>console.log(res)).catch(e=>console.log(e))
                 // await fsPromises.writeFile(`./${chatId}file.html`, res.result.report_html);
                 //
                 //
