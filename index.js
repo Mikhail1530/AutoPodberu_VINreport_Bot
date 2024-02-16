@@ -121,7 +121,7 @@ const start = async () => {
                 // tokenTest
 
                 const vin = '2HKRW2H84MH615140'
-                const url = `/report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
+                const url = `report?vin=${vin}&format=html&reportTemplate=2021=&locale=ru`
                 const getToken = await fsPromises.readFile('../token.js', 'utf8')
                 const tokenVin = JSON.parse(getToken).token
                 const res = await instance.get(url, {
