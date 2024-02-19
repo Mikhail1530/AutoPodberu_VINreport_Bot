@@ -121,7 +121,7 @@ const start = async () => {
                 // tokenTest
                 // рабочий блок для HTML только надо ссылку правильно выдавать
 
-                const vin = 'ja4j4ua83nz087085'
+                const vin = 'JA4J4UA83NZ087085'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
                 const getToken = await fsPromises.readFile('../token.js', 'utf8')
                 const tokenVin = JSON.parse(getToken).token
