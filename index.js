@@ -121,27 +121,27 @@ const start = async () => {
                 // tokenTest
                 // рабочий блок для HTML только надо ссылку правильно выдавать
 
-                // const vin = '2HKRW2H84MH615140'
-                // const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-                // const getToken = await fsPromises.readFile('../token.js', 'utf8')
-                // const tokenVin = JSON.parse(getToken).token
-                //
-                // const {data} = await instance.get(url, {
-                //     headers: {Authorization: `Bearer ${tokenVin}`},
-                // })
-                // await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                //     filename: `${chatId}file.html`,
-                //     contentType: 'application/html'
-                // })
-
-
-                const vin = '5TDYK3DC8DS290235'
+                const vin = 'ja4j4ua83nz087085'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
+                const getToken = await fsPromises.readFile('../token.js', 'utf8')
+                const tokenVin = JSON.parse(getToken).token
+
                 const {data} = await instance.get(url, {
-                    headers: {Authorization: `Bearer ${tokenTest}`},
+                    headers: {Authorization: `Bearer ${tokenVin}`},
                 })
-                console.log(data)
+                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
+                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                    filename: `${chatId}file.html`,
+                    contentType: 'application/html'
+                })
+
+
+                // const vin = '5TDYK3DC8DS290235'
+                // const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
+                // const {data} = await instance.get(url, {
+                //     headers: {Authorization: `Bearer ${tokenTest}`},
+                // })
+                // console.log(data)
                 // await fsPromises.writeFile(`./${chatId}file.html`, data.result.report_html);
                 //
                 //
