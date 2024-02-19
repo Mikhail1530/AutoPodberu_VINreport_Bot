@@ -126,14 +126,14 @@ const start = async () => {
                 const getToken = await fsPromises.readFile('../token.js', 'utf8')
                 const tokenVin = JSON.parse(getToken).token
 
-                const {data} = await instance.get(url, {
+                await instance.get(url, {
                     headers: {Authorization: `Bearer ${tokenVin}`},
-                })
-                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                    filename: `${chatId}file.html`,
-                    contentType: 'application/html'
-                })
+                }).then(res=>console.log(res)).catch(e=>console.log(e))
+                // await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
+                // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                //     filename: `${chatId}file.html`,
+                //     contentType: 'application/html'
+                // })
 
 
                 // const vin = '5TDYK3DC8DS290235'
