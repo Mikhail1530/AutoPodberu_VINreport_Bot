@@ -119,27 +119,27 @@ const start = async () => {
             if (match[0] === 'convert') {
                 // tokenTest
                 // рабочий блок для HTML только надо ссылку правильно выдавать
-               //  const result = await instance.post('login', {
-               //      email: "autopodberu1+1@gmail.com",
-               //      password: "TViGgDAg"
-               //  })
-               //  const timeNow = Math.floor(new Date().getTime() / 1000)
-               //
-               //  const obj = JSON.stringify({token: result.data.token, date: timeNow})
-               //  await fsPromises.writeFile('../token.js', obj)
-               //  const vin = 'JA4J4UA83NZ087085'
-               //  const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-               //  const getToken = await fsPromises.readFile('../token.js', 'utf8')
-               //  const tokenVin = JSON.parse(getToken).token
-               //
-               // const {data} = await instance.get(url, {
-               //      headers: {Authorization: `Bearer ${tokenVin}`},
-               //  })
-               //  await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-               //  await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-               //      filename: `${chatId}file.html`,
-               //      contentType: 'application/html'
-               //  })
+                const result = await instance.post('login', {
+                    email: "autopodberu1+1@gmail.com",
+                    password: "TViGgDAg"
+                })
+                const timeNow = Math.floor(new Date().getTime() / 1000)
+
+                const obj = JSON.stringify({token: result.data.token, date: timeNow})
+                await fsPromises.writeFile('../token.js', obj)
+                const vin = 'JTJDARDZXM2261042'
+                const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
+                const getToken = await fsPromises.readFile('../token.js', 'utf8')
+                const tokenVin = JSON.parse(getToken).token
+
+               const {data} = await instance.get(url, {
+                    headers: {Authorization: `Bearer ${tokenVin}`},
+                })
+                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
+                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                    filename: `${chatId}file.html`,
+                    contentType: 'application/html'
+                })
 
 
                 // const vin = '5TDYK3DC8DS290235'
