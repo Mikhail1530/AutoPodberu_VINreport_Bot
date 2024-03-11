@@ -7,6 +7,7 @@ const sequelize = require('./db')
 const Client = require('./models')
 
 const tokenPayment = '381764678:TEST:77012'
+// live_VOuW0HyxWk2DoJ5PExSUcUFyrORQVz76rKHmAJ-Z3Gs
 const instance = axios.create({
     baseURL: "https://www.clearvin.com/rest/vendor/",
 });
@@ -14,12 +15,10 @@ const instance = axios.create({
 // static variables---------
 const danila_ID = 342056317
 const telegramChannelId = '-1001815620648'
-const greetings = `<b>Приветствую тебя!</b> 👋 \n\nЯ - бот-специалист по отличным предложениям в выборе автомобиля, также я умею узнавать информацию об авто по VIN-номеру! \nБуду присылать тебе экспертные советы и интересные новости из мира авто. 🚗💨 \n\n<b><i><u>Подпишись на наш канал</u></i></b>, чтобы быть в курсе всех последних анонсов и эксклюзивных предложений + получи одну <b>бесплатную проверку</b> для авто. 💼🛣️\nt.me/autopodberu`
+const greetings = `<b>Приветствую тебя!</b> 👋 \n\nЯ - бот-специалист по отличным предложениям в выборе автомобиля, также я умею узнавать информацию об авто по VIN-номеру! \nИногда буду присылать тебе экспертные советы и интересные новости из мира авто. 🚗💨 \n\n<b><i><u>Подпишись на наш канал</u></i></b>, чтобы быть в курсе всех последних анонсов и эксклюзивных предложений + получи одну <b>бесплатную проверку</b> для авто. 💼🛣️\nt.me/autopodberu`
 
 let success = 0
 let notSend = 0
-
-const tokenTest = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VyIjp7ImlkIjoyMDg1MTEsImVtYWlsIjoiYXV0b3BvZGJlcnUxKzFAZ21haWwuY29tIn0sInZlbmRvciI6eyJpZCI6MjczLCJzdGF0dXMiOiJhY3RpdmUiLCJpcCI6WyIxNzIuMjAuMTAuMyIsIjU0Ljg2LjUwLjEzOSIsIjE4NS4xMTUuNC4xNDciLCIxODUuMTE1LjUuMjgiLCI1LjE4OC4xMjkuMjM2Il19LCJpYXQiOjE3MDc5MzM1ODksImV4cCI6MTcxMDUyNTU4OX0.t89d5DSDpQisJtJ9CCr_ZBlihPn61UcGKS8riI30AGY'
 
 
 const KEYBOARD = {
@@ -95,7 +94,7 @@ const start = async () => {
                             await Client.update({freeCheck: true}, {where: {chatId: chatId}})
                             return bot.sendMessage(chatId, 'Вы подписаны на канал <b>AutoPodberu</b> и за это мы дарим вам одну <b>бесплатную проверку</b> по VIN номеру для авто', {parse_mode: 'HTML'})
                         } catch (e) {
-                            console.log(e, 'Ошибка получения проверок за подписку')
+                            console.log(e, 'Ошибка получения проверки за подписку')
                         }
                     }
                     if (res.status === 'member' && validFreeCheck.freeCheck) {
@@ -120,27 +119,27 @@ const start = async () => {
             if (match[0] === 'convert') {
                 // tokenTest
                 // рабочий блок для HTML только надо ссылку правильно выдавать
-                const result = await instance.post('login', {
-                    email: "autopodberu1+1@gmail.com",
-                    password: "TViGgDAg"
-                })
-                const timeNow = Math.floor(new Date().getTime() / 1000)
-
-                const obj = JSON.stringify({token: result.data.token, date: timeNow})
-                await fsPromises.writeFile('../token.js', obj)
-                const vin = 'JA4J4UA83NZ087085'
-                const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-                const getToken = await fsPromises.readFile('../token.js', 'utf8')
-                const tokenVin = JSON.parse(getToken).token
-
-               const {data} = await instance.get(url, {
-                    headers: {Authorization: `Bearer ${tokenVin}`},
-                })
-                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                    filename: `${chatId}file.html`,
-                    contentType: 'application/html'
-                })
+               //  const result = await instance.post('login', {
+               //      email: "autopodberu1+1@gmail.com",
+               //      password: "TViGgDAg"
+               //  })
+               //  const timeNow = Math.floor(new Date().getTime() / 1000)
+               //
+               //  const obj = JSON.stringify({token: result.data.token, date: timeNow})
+               //  await fsPromises.writeFile('../token.js', obj)
+               //  const vin = 'JA4J4UA83NZ087085'
+               //  const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
+               //  const getToken = await fsPromises.readFile('../token.js', 'utf8')
+               //  const tokenVin = JSON.parse(getToken).token
+               //
+               // const {data} = await instance.get(url, {
+               //      headers: {Authorization: `Bearer ${tokenVin}`},
+               //  })
+               //  await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
+               //  await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+               //      filename: `${chatId}file.html`,
+               //      contentType: 'application/html'
+               //  })
 
 
                 // const vin = '5TDYK3DC8DS290235'
