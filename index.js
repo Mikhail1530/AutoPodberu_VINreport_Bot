@@ -127,7 +127,7 @@ const start = async () => {
 
                 const obj = JSON.stringify({token: result.data.token, date: timeNow})
                 await fsPromises.writeFile('../token.js', obj)
-                const vin = 'JTJDARDZXM2261042'
+                const vin = 'JTJDARDZ2M2252223'
                 const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
                 const getToken = await fsPromises.readFile('../token.js', 'utf8')
                 const tokenVin = JSON.parse(getToken).token
