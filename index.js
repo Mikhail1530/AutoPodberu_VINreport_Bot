@@ -116,50 +116,6 @@ const start = async () => {
 
 
 
-            if (match[0] === 'convert') {
-                // tokenTest
-                // рабочий блок для HTML только надо ссылку правильно выдавать
-                const result = await instance.post('login', {
-                    email: "autopodberu1+1@gmail.com",
-                    password: "TViGgDAg"
-                })
-                const timeNow = Math.floor(new Date().getTime() / 1000)
-
-                const obj = JSON.stringify({token: result.data.token, date: timeNow})
-                await fsPromises.writeFile('../token.js', obj)
-                const vin = 'JTJDARDZ2M2252223'
-                const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-                const getToken = await fsPromises.readFile('../token.js', 'utf8')
-                const tokenVin = JSON.parse(getToken).token
-
-               const {data} = await instance.get(url, {
-                    headers: {Authorization: `Bearer ${tokenVin}`},
-                })
-                await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
-                await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                    filename: `${chatId}file.html`,
-                    contentType: 'application/html'
-                })
-
-
-                // const vin = '5TDYK3DC8DS290235'
-                // const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
-                // const {data} = await instance.get(url, {
-                //     headers: {Authorization: `Bearer ${tokenTest}`},
-                // })
-                // console.log(data)
-                // await fsPromises.writeFile(`./${chatId}file.html`, data.result.report_html);
-                //
-                //
-                // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
-                //     filename: `${chatId}file.html`,
-                //     contentType: 'application/html'
-                // })
-            }
-
-
-
-
             if (match[0] === '✅ VIN') {
                 return bot.sendMessage(chatId, 'Если у вас есть доступные проверки, то просто вбейте в строку ввода <b><i>VIN номер</i></b> (<i>17 символов</i>) и получите подробную информацию об автомобиле в <i>PDF-файле</i> 📂\n\nОстаток проверок можно узнать нажав на соответствующую кнопку ⚖', {parse_mode: 'HTML'})
             }
@@ -211,6 +167,62 @@ const start = async () => {
             }
 
             // Block options Danila
+            if (match[0].length === 17 && chatId === danila_ID) {
+                const url = `report?vin=${msg.text}&format=html&reportTemplate=2021&locale=ru`
+                const tokenDate = await fsPromises.readFile('../token.js', 'utf8')
+                const time = JSON.parse(tokenDate).date
+                const nowTime = Math.floor(new Date().getTime() / 1000)
+
+                if ((nowTime - time) > 7140) {
+                    const result = await instance.post('login', {
+                        email: "autopodberu1+1@gmail.com",
+                        password: "TViGgDAg"
+                    })
+                    const obj = JSON.stringify({token: result.data.token, date: nowTime})
+                    await fsPromises.writeFile('../token.js', obj)
+                }
+
+                try {
+                    const getToken = await fsPromises.readFile('../token.js', 'utf8')
+                    const tokenVin = JSON.parse(getToken).token
+                    const {data} = await instance.get(url, {
+                        headers: {Authorization: `Bearer ${tokenVin}`},
+                    })
+                    await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
+                    await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                        filename: `${chatId}file.html`,
+                        contentType: 'application/html'
+                    })
+                    return
+                } catch (e) {
+                    await bot.sendMessage(chatId, 'Такого VIN номера в базе нет')
+                }
+
+
+                // const result = await instance.post('login', {
+                //     email: "autopodberu1+1@gmail.com",
+                //     password: "TViGgDAg"
+                // })
+                // const timeNow = Math.floor(new Date().getTime() / 1000)
+                //
+                // const obj = JSON.stringify({token: result.data.token, date: timeNow})
+                // await fsPromises.writeFile('../token.js', obj)
+                // const vin = 'JTJDARDZ2M2252223'
+                // const url = `report?vin=${vin}&format=html&reportTemplate=2021&locale=ru`
+                // const getToken = await fsPromises.readFile('../token.js', 'utf8')
+                // const tokenVin = JSON.parse(getToken).token
+                //
+                // const {data} = await instance.get(url, {
+                //     headers: {Authorization: `Bearer ${tokenVin}`},
+                // })
+                // await fsPromises.writeFile(`./${chatId}file.html`, data.result.html_report);
+                // await bot.sendDocument(chatId, `./${chatId}file.html`, {}, {
+                //     filename: `${chatId}file.html`,
+                //     contentType: 'application/html'
+                // })
+            }
+
+
             if (match[0] === '💌 Рассылка для контактов' && chatId === danila_ID) {
                 return bot.sendMessage(chatId, `\n<b>1) Чтобы разослать картинку и текст подписчикам:</b> <i>Просто отправляй фото и описание к ней.</i>\n\n<b>2) Чтобы отправить текст без картинки:</b> <i>Необходимо поставить две звездочки (**) перед сообщением. (например: **Привет человеки)</i>`, {parse_mode: 'HTML'})
             }
