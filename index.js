@@ -6,7 +6,8 @@ const fsPromises = require('fs').promises
 const sequelize = require('./db')
 const Client = require('./models')
 
-const tokenPayment = '381764678:TEST:77012'
+// const tokenPaymentTest = '381764678:TEST:77012'
+const tokenPayment = '390540012:LIVE:46560'
 // live_VOuW0HyxWk2DoJ5PExSUcUFyrORQVz76rKHmAJ-Z3Gs
 const instance = axios.create({
     baseURL: "https://www.clearvin.com/rest/vendor/",
@@ -69,7 +70,6 @@ const start = async () => {
     bot.onText(/(.+)/, async (msg, match) => {
         const chatId = msg.chat.id
 
-
         try {
             if (match[0] === '/start' && chatId === danila_ID) {
                 return bot.sendMessage(chatId, 'Здравствуй, курчявенький Данилкин 👋🏻', KEYBOARD_ADMIN)
@@ -112,9 +112,6 @@ const start = async () => {
             if (match[0] === '💳 Купить проверки ($)') {
                 return bot.sendMessage(chatId, '<i>Выберете нужное количество 🎳</i>', checksOptions)
             }
-
-
-
 
             if (match[0] === '✅ VIN') {
                 return bot.sendMessage(chatId, 'Если у вас есть доступные проверки, то просто вбейте в строку ввода <b><i>VIN номер</i></b> (<i>17 символов</i>) и получите подробную информацию об автомобиле в <i>PDF-файле</i> 📂\n\nОстаток проверок можно узнать нажав на соответствующую кнопку ⚖', {parse_mode: 'HTML'})
@@ -222,12 +219,11 @@ const start = async () => {
                 // })
             }
 
-
             if (match[0] === '💌 Рассылка для контактов' && chatId === danila_ID) {
                 return bot.sendMessage(chatId, `\n<b>1) Чтобы разослать картинку и текст подписчикам:</b> <i>Просто отправляй фото и описание к ней.</i>\n\n<b>2) Чтобы отправить текст без картинки:</b> <i>Необходимо поставить две звездочки (**) перед сообщением. (например: **Привет человеки)</i>`, {parse_mode: 'HTML'})
             }
             if (match[0] === '🤙 Статистика последних отправленных' && chatId === danila_ID) {
-                await bot.sendMessage(chatId, `\n<i>Сообщения получено:</i> ${success}\n<i>Сообщений не доставлено:</i> ${notSend}`, {parse_mode: 'HTML'})
+                return  bot.sendMessage(chatId, `\n<i>Сообщения получено:</i> ${success}\n<i>Сообщений не доставлено:</i> ${notSend}`, {parse_mode: 'HTML'})
             }
             if (match[0] === '☎ Статистика проверок' && chatId === danila_ID) {
                 const res = await Client.findAll()
@@ -236,10 +232,9 @@ const start = async () => {
                     acc += cur
                     return acc
                 }, 0)
-                // const freeChecks = res.map(c => c['dataValues']['freeChecks']).filter(c=>c === true)
                 return bot.sendMessage(chatId, `\n<b>Всего проверок куплено:</b> <i>${allChecks - freeChecks.length}</i>\n<b>Активированные проверки за подписку:</b> <i>${freeChecks.length}</i>`, {parse_mode: 'HTML'})
             } else {
-                chatId !== danila_ID ? await bot.sendMessage(chatId, 'Неизвестная команда, выберете доступные опции в меню кнопок') : ''
+                chatId !== danila_ID ? await bot.sendMessage(chatId, 'Неизвестная команда, выберете доступные опции в меню кнопок') : 'Не то мутишь, паренёк'
             }
         } catch (e) {
             await bot.sendMessage(chatId, 'Something crashed on the server')
