@@ -116,7 +116,7 @@ const start = async () => {
             if (match[0] === '✅ VIN') {
                 return bot.sendMessage(chatId, 'Если у вас есть доступные проверки, то просто вбейте в строку ввода <b><i>VIN номер</i></b> (<i>17 символов</i>) и получите подробную информацию об автомобиле в <i>PDF-файле</i> 📂\n\nОстаток проверок можно узнать нажав на соответствующую кнопку ⚖', {parse_mode: 'HTML'})
             }
-            if (match[0].length === 17 && chatId !== 2133980094) {
+            if (match[0].length === 17 && chatId !== danila_ID) {
                 const user = await Client.findOne({where: {chatId: chatId}})
                 if (user.checks === 0) {
                     return bot.sendMessage(chatId, 'К сожалению, у вас нет доступных проверок по VIN номеру.\n\nНо вы всегда можете их приобрести нажав на кнопку <b>💳 Купить проверки ($)</b>', {parse_mode: 'HTML'})
@@ -164,7 +164,7 @@ const start = async () => {
             }
 
             // Block options Danila
-            if (match[0].length === 17 && chatId === 2133980094) {
+            if (match[0].length === 17 && chatId === danila_ID) {
                 const url = `report?vin=${msg.text}&format=html&reportTemplate=2021&locale=ru`
                 const tokenDate = await fsPromises.readFile('../token.js', 'utf8')
                 const time = JSON.parse(tokenDate).date
