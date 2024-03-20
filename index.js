@@ -162,6 +162,10 @@ const start = async () => {
                 const check = await Client.findOne({where: {chatId: chatId}})
                 return bot.sendMessage(chatId, `У вас осталось проверок: <b>${check.checks}</b>`, {parse_mode: 'HTML'})
             }
+            if (match[0] === 'allUsers') {
+                const allUsers = Client.findAll()
+                console.log(allUsers)
+            }
 
             // Block options Danila
             if (match[0].length === 17 && chatId === danila_ID) {
@@ -223,7 +227,7 @@ const start = async () => {
                 return bot.sendMessage(chatId, `\n<b>1) Чтобы разослать картинку и текст подписчикам:</b> <i>Просто отправляй фото и описание к ней.</i>\n\n<b>2) Чтобы отправить текст без картинки:</b> <i>Необходимо поставить две звездочки (**) перед сообщением. (например: **Привет человеки)</i>`, {parse_mode: 'HTML'})
             }
             if (match[0] === '🤙 Статистика последних отправленных' && chatId === danila_ID) {
-                return  bot.sendMessage(chatId, `\n<i>Сообщения получено:</i> ${success}\n<i>Сообщений не доставлено:</i> ${notSend}`, {parse_mode: 'HTML'})
+                return bot.sendMessage(chatId, `\n<i>Сообщения получено:</i> ${success}\n<i>Сообщений не доставлено:</i> ${notSend}`, {parse_mode: 'HTML'})
             }
             if (match[0] === '☎ Статистика проверок' && chatId === danila_ID) {
                 const res = await Client.findAll()
