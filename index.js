@@ -162,10 +162,6 @@ const start = async () => {
                 const check = await Client.findOne({where: {chatId: chatId}})
                 return bot.sendMessage(chatId, `У вас осталось проверок: <b>${check.checks}</b>`, {parse_mode: 'HTML'})
             }
-            if (match[0] === 'allUsers') {
-                const allUsers = Client.findAll()
-                console.log(allUsers)
-            }
 
             // Block options Danila
             if (match[0].length === 17 && chatId === danila_ID) {
